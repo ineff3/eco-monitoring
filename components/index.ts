@@ -6,6 +6,7 @@ import FactorBlock from "./FactorBlock";
 import CustomDropdown from "./CustomDropdown";
 import SuccessfulToast from "./toasts/SuccessfulToast";
 import ErrorToast from "./toasts/ErrorToast";
+import CustomButton from "./CustomButton";
 
 
 export {
@@ -17,4 +18,5 @@ export {
     CustomDropdown,
     SuccessfulToast,
     ErrorToast,
+    CustomButton,
 }

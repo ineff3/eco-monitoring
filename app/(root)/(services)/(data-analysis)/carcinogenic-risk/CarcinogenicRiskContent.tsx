@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react'
 import Image from 'next/image'
 import { Exo } from 'next/font/google'
 import { CarcinogenicDataType, PollutionType, passportsWithCompaniesType } from '@/types';
-import { CustomDropdown, ErrorToast, FactorBlock, SuccessfulToast } from '@/components';
+import { CustomButton, CustomDropdown, ErrorToast, FactorBlock, SuccessfulToast } from '@/components';
 import { getCalculatedCarcinogenicRisk } from '@/actions/basic-actions/actions';
 import { CarcinogenicFactorsSchema } from '@/schemas';
 import { toast } from 'react-hot-toast';
@@ -350,14 +350,12 @@ const CarcinogenicRiskContent = ({ pollutions, companyNames, passportsWithCompan
                                             setSelected={setSelectedBodyType}
                                         />
                                     </div>
-                                    <div className=' flex flex-auto justify-end'>
-                                        <button
-                                            className={` border-[2px] border-black px-6 py-2 text-xl rounded-[10px] hover:bg-slate-200 ${exo.className}`}
-                                            onClick={resetAllSelectedFields}
+                                    <div className=' flex flex-auto justify-center md:justify-end'>
+                                        <CustomButton
+                                            title='RESET'
                                             type='reset'
-                                        >
-                                            RESET
-                                        </button>
+                                            onClick={resetAllSelectedFields}
+                                        />
                                     </div>
                                 </div>
 
@@ -379,17 +377,15 @@ const CarcinogenicRiskContent = ({ pollutions, companyNames, passportsWithCompan
                             </div>
                             <div className=' flex flex-col gap-8 flex-auto'>
                                 <p className=' text-sm'>The average daily dose of exposure to a substance for the city' population</p>
-                                <div className=' flex gap-2 items-center'>
+                                <div className=' flex flex-wrap gap-2 items-center'>
                                     <p className={`text-xl font-light break-words ${exo.className}`}>{calculatedCarcinogenicRisk}</p>
                                     <div className={` text-[#7f7f7f] ${calculatedCarcinogenicRisk === '' ? 'hidden' : 'block'}`}>mg/kg-day</div>
                                 </div>
                                 <div className=' flex flex-auto items-end'>
-                                    <button
-                                        className={` border-[2px] border-black px-4 py-2 text-xl rounded-[10px] hover:bg-slate-200 ${exo.className}`}
+                                    <CustomButton
+                                        title='CALCULATE'
                                         type='submit'
-                                    >
-                                        CALCULATE
-                                    </button>
+                                    />
                                 </div>
 
                             </div>

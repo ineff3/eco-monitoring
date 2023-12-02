@@ -1,4 +1,4 @@
-import { Hero, Services } from '@/components'
+import { CustomButton, Hero, Services } from '@/components'
 import React from 'react'
 
 const Home = () => {

@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react'
 import Image from 'next/image'
 import { Exo } from 'next/font/google'
 import { NonCarcinogenicDataType, PollutionType, RfcFactorType, passportsWithCompaniesType } from '@/types';
-import { CustomDropdown, ErrorToast, FactorBlock, SuccessfulToast } from '@/components';
+import { CustomButton, CustomDropdown, ErrorToast, FactorBlock, SuccessfulToast } from '@/components';
 import { getCalculatedNonCarcinogenicRisk } from '@/actions/basic-actions/actions';
 import { NonCarcinogenicFactorsSchema } from '@/schemas';
 import { toast } from 'react-hot-toast';
@@ -152,7 +152,7 @@ const NonCarcinogenicRiskContent = ({ pollutions, companyNames, passportsWithCom
 
     return (
         <div className=" w-full flex flex-col gap-6 py-12 px-10">
-            <form>
+            <form action={clientGetCalculatedNonCarcinogenicRisk}>
                 <div className=' grid grid-rows-[repeat(auto-fill,minmax(210px,auto_1fr))] grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-5'>
                     <div className=' flex flex-col gap-8 bg-white border border-[#d3d3d3] rounded-[20px] p-6 row-span-2 sm:col-span-2 order-1'>
                         <div className=' flex items-center justify-center sm:justify-between'>
@@ -251,12 +251,10 @@ const NonCarcinogenicRiskContent = ({ pollutions, companyNames, passportsWithCom
                             ))}
                         </div>
                         <div className=' flex flex-auto items-end'>
-                            <button
-                                className={` border-[2px] border-black px-4 py-2 text-xl rounded-[10px] w-full hover:bg-slate-200 ${exo.className}`}
-                                formAction={clientGetCalculatedNonCarcinogenicRisk}
-                            >
-                                CALCULATE
-                            </button>
+                            <CustomButton
+                                title='CALCULATE'
+                                type='submit'
+                            />
                         </div>
                     </div>
 
