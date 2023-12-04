@@ -173,11 +173,6 @@ const CarcinogenicRiskContent = ({ pollutions, companyNames, passportsWithCompan
         setSelectedBodyType('')
     }
 
-
-
-    const abobas = ['Aboba1', 'Aboba2', 'Aboba3']
-
-
     return (
         <div className={`w-full flex flex-col gap-6 py-5 sm:py-12 px-4 sm:px-10`}>
             <form action={clientGetCalculatedCarcinogenicRisk}>

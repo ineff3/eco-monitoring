@@ -9,6 +9,8 @@ const agent = new https.Agent({
     rejectUnauthorized: false
 });
 
+const link = 'https://env-monitor-ullzynenoa-lm.a.run.app/'
+
 export const getCompanies = async () => {
     const fetchOptions = {
         method: 'GET',
@@ -16,7 +18,7 @@ export const getCompanies = async () => {
     };
 
     try {
-        const response = await fetch('https://localhost:7001/api/CompanyData', fetchOptions);
+        const response = await fetch(`${link}api/CompanyData`, fetchOptions);
 
         if (!response.ok) {
             throw new Error(`HTTP error! Status: ${response.status}`);
@@ -38,7 +40,7 @@ export const getPassports = async () => {
     };
 
     try {
-        const response = await fetch('https://localhost:7001/api/PassportData', fetchOptions);
+        const response = await fetch(`${link}api/PassportData`, fetchOptions);
 
         if (!response.ok) {
             throw new Error(`HTTP error! Status: ${response.status}`);
@@ -60,7 +62,7 @@ export const getPollutions = async () => {
     };
 
     try {
-        const response = await fetch('https://localhost:7001/api/EnvData', fetchOptions);
+        const response = await fetch(`${link}api/EnvData`, fetchOptions);
 
         if (!response.ok) {
             throw new Error(`HTTP error! Status: ${response.status}`);
@@ -82,7 +84,7 @@ export const getRfcFactors = async () => {
     };
 
     try {
-        const response = await fetch('https://localhost:7001/api/RfcData', fetchOptions);
+        const response = await fetch(`${link}api/RfcData`, fetchOptions);
 
         if (!response.ok) {
             throw new Error(`HTTP error! Status: ${response.status}`);
@@ -117,7 +119,7 @@ export const getCalculatedCarcinogenicRisk = async (carcinogenicFactors: unknown
             body: JSON.stringify(result.data),
             agent
         };
-        const response = await fetch('https://localhost:7001/api/DataAnalysis/CarcinogenicRisk', fetchOptions)
+        const response = await fetch(`${link}api/DataAnalysis/CarcinogenicRisk`, fetchOptions)
 
         if (!response.ok) {
             const responseBody = await response.json() as CustomServerResponse;
@@ -151,7 +153,7 @@ export const getCalculatedNonCarcinogenicRisk = async (nonCarcinogenicFactors: u
             body: JSON.stringify(result.data),
             agent
         };
-        const response = await fetch('https://localhost:7001/api/DataAnalysis/NonCarcinogenicRisk', fetchOptions)
+        const response = await fetch(`${link}api/DataAnalysis/NonCarcinogenicRisk`, fetchOptions)
 
         if (!response.ok) {
             const responseBody = await response.json() as CustomServerResponse;

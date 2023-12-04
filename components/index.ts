@@ -7,6 +7,7 @@ import CustomDropdown from "./CustomDropdown";
 import SuccessfulToast from "./toasts/SuccessfulToast";
 import ErrorToast from "./toasts/ErrorToast";
 import CustomButton from "./CustomButton";
+import NewsSection from "./news/NewsSection";
 
 
 export {
@@ -19,4 +20,5 @@ export {
     SuccessfulToast,
     ErrorToast,
     CustomButton,
+    NewsSection
 }

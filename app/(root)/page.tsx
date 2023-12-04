@@ -1,4 +1,4 @@
-import { CustomButton, Hero, Services } from '@/components'
+import { CustomButton, Hero, NewsSection, Services } from '@/components'
 import React from 'react'
 
 const Home = () => {
@@ -6,7 +6,8 @@ const Home = () => {
         <div className='flex flex-col'>
             <Hero />
             <Services />
-            <div className=' h-[1100px] '>Home</div>
+            <NewsSection />
+            <div className=' h-[600px]'>Aboba</div>
         </div>
     )
 }

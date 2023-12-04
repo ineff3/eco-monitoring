@@ -140,7 +140,7 @@ const NonCarcinogenicRiskContent = ({ pollutions, companyNames, passportsWithCom
             toast.custom((t) => <ErrorToast t={t} message={response.error} />);
         } else {
             setCalculatedNonCarcinogenicRisk(String(response))
-            toast.custom((t) => <SuccessfulToast t={t} message='Carcinogenic risk successfuly calculated' />, { duration: 2500 });
+            toast.custom((t) => <SuccessfulToast t={t} message='Non-Carcinogenic risk successfuly calculated' />, { duration: 2500 });
         }
 
     }
