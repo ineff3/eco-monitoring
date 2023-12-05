@@ -3,6 +3,7 @@ import localFont from 'next/font/local'
 import { Open_Sans } from 'next/font/google'
 import { Toaster } from 'react-hot-toast'
 import './globals.css'
+import Provider from './Provider'
 
 const openSans = Open_Sans({ subsets: ['latin'] })
 
@@ -35,7 +36,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={corbel.className}>
-        {children}
+        <Provider>{children}</Provider>
         <Toaster position='top-right' />
       </body>
     </html>
