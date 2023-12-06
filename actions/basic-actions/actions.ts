@@ -9,7 +9,7 @@ const agent = new https.Agent({
     rejectUnauthorized: false
 });
 
-const link = 'https://env-monitor-ullzynenoa-lm.a.run.app/'
+const link = process.env.NEXT_PUBLIC_API_URL;
 
 export const getCompanies = async () => {
     const fetchOptions = {

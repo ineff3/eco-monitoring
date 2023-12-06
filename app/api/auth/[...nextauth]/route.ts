@@ -1,7 +1,7 @@
 import NextAuth from "next-auth"
 import CredentialsProvider from "next-auth/providers/credentials"
 
-const link = 'https://env-monitor-ullzynenoa-lm.a.run.app/'
+const link = process.env.NEXT_PUBLIC_API_URL
 
 export const authOptions = {
     providers: [
