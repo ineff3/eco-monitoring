@@ -10,6 +10,7 @@ import Image from 'next/image'
 import { PiUserCircleLight } from "react-icons/pi";
 import { RiArrowDownSLine } from "react-icons/ri";
 import { signIn, signOut, useSession } from 'next-auth/react'
+import LoginModal from './LoginModal';
 
 const Navbar = ({ menu, handleMenu }: { menu: boolean, handleMenu: () => void }) => {
     const [scroll, setScroll] = useState(false);
@@ -197,6 +198,7 @@ const NavSection = () => {
 
 const NavEndOptions = ({ handleSearchOpen }: { handleSearchOpen: () => void }) => {
     const { data: session } = useSession();
+    const [isModalOpen, setIsModalOpen] = useState(false)
 
     return (
         <div className=' flex items-center gap-4'>
@@ -211,9 +213,14 @@ const NavEndOptions = ({ handleSearchOpen }: { handleSearchOpen: () => void }) =
                 </>
             ) : (
                 <>
-                    <button className=' bg-dark bg-opacity-80 text-white px-6 py-2 rounded-lg' onClick={() => signIn()}>
+                    <button className=' bg-dark bg-opacity-80 text-white px-6 py-2 rounded-lg'
+                        onClick={() => setIsModalOpen(true)}>
                         <span className=' relative top-[0.08rem]'>Sign In</span>
                     </button>
+                    <LoginModal
+                        isOpen={isModalOpen}
+                        setIsOpen={setIsModalOpen}
+                    />
                 </>
             )}
 
