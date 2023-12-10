@@ -1,10 +1,11 @@
 'use client';
 import { signIn } from 'next-auth/react'
 import { Dialog, Transition } from '@headlessui/react'
-import { Fragment, useState, useRef } from 'react'
-
-import React from 'react'
-import { CustomButton } from '.';
+import { Fragment, useState, useEffect } from 'react'
+import { RiCloseFill } from "react-icons/ri";
+import { CustomButton, CustomUncontrolledInput } from '.';
+import { getErrorMessage } from '@/actions/secondary-utils/errorHandling';
+import Link from 'next/link';
 
 interface LoginModalProps {
     isOpen: boolean
@@ -12,15 +13,16 @@ interface LoginModalProps {
 }
 
 const LoginModal = ({ isOpen, setIsOpen }: LoginModalProps) => {
+    const [errorIsOpen, setErrorIsOpen] = useState(false);
+    const [errorState, setErrorState] = useState('')
 
-
+    useEffect(() => {
+        setErrorIsOpen(false)
+        setErrorState('')
+    }, [isOpen])
 
     function closeModal() {
         setIsOpen(false)
-    }
-
-    function openModal() {
-        setIsOpen(true)
     }
 
     const onFormSubmition = async (formData: FormData) => {
@@ -32,24 +34,19 @@ const LoginModal = ({ isOpen, setIsOpen }: LoginModalProps) => {
                     redirect: false
                 }
             )
+            if (res?.error) {
+                throw new Error(res?.error)
+            }
             if (res?.ok) {
                 closeModal();
                 return;
             }
-            if (res?.error) {
-                throw new Error(res?.error)
-            }
 
         } catch (error) {
-            console.log(error)
+            setErrorIsOpen(true);
+            setErrorState(getErrorMessage(error))
         }
     }
-    // async () => {
-    //     const res = await signIn('credentials', { username: 'sugoma', password: 'kruchniegay28', redirect: false, callbackUrl: 'http://localhost:3000/carcinogenic-risk' })
-    //     if (res?.error) {
-    //         console.log(res.error)
-    //     }
-    // }
 
     return (
         <Transition appear show={isOpen} as={Fragment}>
@@ -77,40 +74,48 @@ const LoginModal = ({ isOpen, setIsOpen }: LoginModalProps) => {
                             leaveFrom="opacity-100 scale-100"
                             leaveTo="opacity-0 scale-95"
                         >
-                            <Dialog.Panel className="w-full max-w-[450px] h-[320px] transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
+                            <Dialog.Panel className="w-full max-w-[450px] h-[350px] transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
                                 <form className='h-full flex flex-col ' action={onFormSubmition}>
-                                    <p className=' font-bold text-3xl'>Log in</p>
-                                    <div className=' relative flex flex-col gap-5 mt-5'>
-                                        <input
-                                            type="text"
-                                            placeholder='Username'
+                                    <div className=' flex justify-between items-center'>
+                                        <p className=' font-bold text-3xl'>Log in</p>
+                                        <div className=' p-2 rounded-full hover:bg-slate-200' onClick={() => closeModal()}>
+                                            <RiCloseFill size={25} />
+                                        </div>
+                                    </div>
+                                    <div className=' relative flex flex-col gap-5 mt-8'>
+                                        <CustomUncontrolledInput
+                                            title='Username'
                                             name='username'
+                                            color='black'
                                             required
-                                            className=' border border-black py-2 px-3 rounded-md'
                                         />
-                                        <input
-                                            type="password"
-                                            placeholder='Password'
+                                        <CustomUncontrolledInput
+                                            title='Password'
                                             name='password'
+                                            color='black'
+                                            type='password'
                                             required
-                                            className=' border border-black py-2 px-3 rounded-md'
                                         />
                                     </div>
-                                    {/* {errorIsOpen && (
-                                        <div className=' text-red-400 text-sm mt-1'>
-                                            Credentials are invalid
+                                    {errorIsOpen && (
+                                        <div className=' text-red-400 text-sm mt-2'>
+                                            {errorState}
                                         </div>
-                                    )} */}
+                                    )}
                                     <div className=' flex flex-auto h-full gap-3 justify-center items-end'>
-                                        <CustomButton
-                                            title='Close'
-                                            onClick={() => closeModal()}
-                                        />
+
                                         <CustomButton
                                             title='Sign in'
                                             type='submit'
                                         />
                                     </div>
+                                    <Link
+                                        href={'/registration'}
+                                        className=' hover:text-gray-500'
+                                        onClick={() => closeModal()}
+                                    >
+                                        <p className=' text-center text-sm mt-2'>Don`t have an account?</p>
+                                    </Link>
                                 </form>
                             </Dialog.Panel>
                         </Transition.Child>

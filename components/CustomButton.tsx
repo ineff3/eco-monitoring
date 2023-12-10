@@ -18,7 +18,7 @@ interface CustomButtonProps {
 const CustomButton = ({ title, type, additionalStyles, onClick }: CustomButtonProps) => {
     return (
         <button
-            className={` border-[2px] border-black px-5 py-2 text-xl rounded-[10px] hover:bg-slate-200 tracking-wider ${exo.className} ${additionalStyles}`}
+            className={` ${additionalStyles} border-[2px] border-black px-5 py-2 text-xl rounded-[10px] hover:bg-slate-200 tracking-wider ${exo.className} `}
             type={type}
             onClick={onClick}
         >

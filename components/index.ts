@@ -8,6 +8,8 @@ import SuccessfulToast from "./toasts/SuccessfulToast";
 import ErrorToast from "./toasts/ErrorToast";
 import CustomButton from "./CustomButton";
 import NewsSection from "./news/NewsSection";
+import LoginModal from "./LoginModal";
+import CustomUncontrolledInput from "./CustomUncontrolledInput";
 
 
 export {
@@ -20,5 +22,7 @@ export {
     SuccessfulToast,
     ErrorToast,
     CustomButton,
-    NewsSection
+    NewsSection,
+    LoginModal,
+    CustomUncontrolledInput
 }

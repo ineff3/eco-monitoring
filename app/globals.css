@@ -7,8 +7,23 @@ body{
   @apply bg-[#f0f0f0]
 
 }
+.myInput:focus + .myInputLabel {
+  @apply
+  text-black px-1 -translate-x-3.5 -translate-y-[22px] scale-90
+          transition-all duration-[250ms] ease-in-out
+}
+
+.myInput:not(:focus) +.myInputLabel {
+@apply
+  text-gray-400
+}
+.myInput:not(:focus) {
+@apply
+  text-gray-400
+}
+/* input:focus::placeholder {
+  color: transparent;
+} */
 
 
-  input:focus::placeholder {
-    color: transparent;
-  }
+

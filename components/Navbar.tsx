@@ -1,20 +1,26 @@
 'use client';
-import React from 'react'
 import { usePathname } from 'next/navigation'
 import Link from 'next/link'
-import { useState, useEffect } from 'react';
+import { Fragment, useState, useEffect } from 'react';
 import { TbMenu2 } from "react-icons/tb";
 import { AiOutlineClose } from "react-icons/ai";
 import { FaMagnifyingGlass } from "react-icons/fa6";
 import Image from 'next/image'
-import { PiUserCircleLight } from "react-icons/pi";
 import { RiArrowDownSLine } from "react-icons/ri";
-import { signIn, signOut, useSession } from 'next-auth/react'
+import { signOut, useSession } from 'next-auth/react'
 import LoginModal from './LoginModal';
+import { Menu, Transition } from '@headlessui/react'
+import { IoSettingsOutline } from "react-icons/io5"
+import { PiSignOut } from "react-icons/pi";
+import { useSearchParams } from 'next/navigation'
+
 
 const Navbar = ({ menu, handleMenu }: { menu: boolean, handleMenu: () => void }) => {
     const [scroll, setScroll] = useState(false);
     const [searchOpen, setSearchOpen] = useState(false);
+    const searchParams = useSearchParams()
+
+    const loginModal = searchParams.get('loginModal')
 
     const handleSearchOpen = () => {
         setSearchOpen(!searchOpen);
@@ -53,7 +59,7 @@ const Navbar = ({ menu, handleMenu }: { menu: boolean, handleMenu: () => void })
 
 
                         <div className='flex flex-auto md:flex-grow-0 justify-end items-center md:mx-3 lg:mx-8 gap-4'>
-                            <NavEndOptions handleSearchOpen={handleSearchOpen} />
+                            <NavEndOptions handleSearchOpen={handleSearchOpen} loginModalToOpen={Boolean(loginModal)} />
                             <UserProfile />
                         </div>
 
@@ -82,11 +88,75 @@ const Navbar = ({ menu, handleMenu }: { menu: boolean, handleMenu: () => void })
 export default Navbar
 
 
+
 const UserProfile = () => {
+    const { data: session } = useSession();
+
     return (
-        <div>
-            <PiUserCircleLight size={50} />
-        </div>
+        <>
+            {session?.user && (
+                <Menu as="div" className="relative flex items-center text-left">
+                    <Menu.Button>
+                        <div className=' p-2 rounded-full border-2 border-[#4e7a54] hover:bg-slate-200'>
+                            <Image
+                                src='/factor-icons/account.png'
+                                alt='account'
+                                width={40}
+                                height={40}
+                            />
+                        </div>
+                    </Menu.Button>
+                    <Transition
+                        as={Fragment}
+                        enter="transition ease-out duration-100"
+                        enterFrom="transform opacity-0 scale-95"
+                        enterTo="transform opacity-100 scale-100"
+                        leave="transition ease-in duration-75"
+                        leaveFrom="transform opacity-100 scale-100"
+                        leaveTo="transform opacity-0 scale-95"
+                    >
+                        <Menu.Items className="absolute right-0 mt-[230px] w-56 origin-top-right   bg-white shadow-lg ring-1 ring-black/5 focus:outline-none flex flex-col rounded-xl overflow-hidden">
+                            <Menu.Item>
+                                {({ active }) => (
+                                    <div className=' flex flex-col items-center px-5 py-3 text-black border-b border-gray-300 '>
+                                        <div>Sugoma</div>
+                                        <div className=' text-sm'>abobus@gmail.com</div>
+
+                                    </div>
+                                )}
+                            </Menu.Item>
+                            <Menu.Item>
+                                {({ active }) => (
+                                    <Link
+                                        href='/'
+                                        className={`${active ?
+                                            'bg-dark bg-opacity-80 text-white' :
+                                            'bg-white text-black'} px-4 py-2 flex gap-4 items-center`}
+                                    >
+                                        <IoSettingsOutline size={17} />
+                                        <p className=' relative top-[0.1rem]'>Manage Account</p>
+                                    </Link>
+                                )}
+                            </Menu.Item>
+                            <Menu.Item>
+                                {({ active }) => (
+                                    <button
+                                        onClick={() => signOut()}
+                                        className={`${active ?
+                                            'bg-dark bg-opacity-80 text-white' :
+                                            'bg-white text-black'} px-4 py-2 flex gap-4 items-center`}
+                                    >
+                                        <PiSignOut size={17} />
+                                        <p className=' relative top-[0.1rem]'>Sign out</p>
+                                    </button>
+                                )}
+                            </Menu.Item>
+                        </Menu.Items>
+                    </Transition>
+                </Menu>
+            )}
+        </>
+
     )
 }
 
@@ -196,9 +266,9 @@ const NavSection = () => {
     )
 }
 
-const NavEndOptions = ({ handleSearchOpen }: { handleSearchOpen: () => void }) => {
+const NavEndOptions = ({ handleSearchOpen, loginModalToOpen }: { handleSearchOpen: () => void, loginModalToOpen: boolean | null }) => {
     const { data: session } = useSession();
-    const [isModalOpen, setIsModalOpen] = useState(false)
+    const [isModalOpen, setIsModalOpen] = useState(!!loginModalToOpen)
 
     return (
         <div className=' flex items-center gap-4'>
@@ -207,9 +277,9 @@ const NavEndOptions = ({ handleSearchOpen }: { handleSearchOpen: () => void }) =
             </div>
             {session?.user ? (
                 <>
-                    <button className=' bg-dark bg-opacity-80 text-white px-6 py-2 rounded-lg' onClick={() => signOut()}>
+                    {/* <button className=' bg-dark bg-opacity-80 text-white px-6 py-2 rounded-lg' onClick={() => signOut()}>
                         <span className=' relative top-[0.08rem]'>Sign Out</span>
-                    </button>
+                    </button> */}
                 </>
             ) : (
                 <>
