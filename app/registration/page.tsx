@@ -3,11 +3,18 @@ import { createUserAccount } from '@/actions/basic-actions/actions'
 import { getErrorMessage } from '@/actions/secondary-utils/errorHandling'
 import { CustomButton, CustomUncontrolledInput } from '@/components'
 import Link from 'next/link'
-import React, { useState } from 'react'
+import { useState } from 'react'
+import { useSession } from 'next-auth/react'
+import { redirect } from 'next/navigation'
 
 const SignUpPage = () => {
     const [errorIsOpen, setErrorIsOpen] = useState(false);
     const [errorState, setErrorState] = useState('')
+    const { data: session } = useSession();
+
+    if (session?.user) {
+        redirect('/')
+    }
 
     const clientCreateUserAccount = async (formData: FormData) => {
         try {
