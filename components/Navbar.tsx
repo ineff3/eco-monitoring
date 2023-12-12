@@ -128,7 +128,7 @@ const UserProfile = () => {
                             <Menu.Item>
                                 {({ active }) => (
                                     <Link
-                                        href='/'
+                                        href={`/profiles/${session.user.userName}`}
                                         className={`${active ?
                                             'bg-dark bg-opacity-80 text-white' :
                                             'bg-white text-black'} px-4 py-2 flex gap-4 items-center`}
