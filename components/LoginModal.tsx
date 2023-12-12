@@ -98,7 +98,7 @@ const LoginModal = ({ isOpen, setIsOpen }: LoginModalProps) => {
                                         />
                                     </div>
                                     {errorIsOpen && (
-                                        <div className=' text-red-400 text-sm mt-2'>
+                                        <div className=' text-red-500 text-sm mt-2'>
                                             {errorState}
                                         </div>
                                     )}

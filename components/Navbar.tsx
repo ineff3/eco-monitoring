@@ -119,8 +119,8 @@ const UserProfile = () => {
                             <Menu.Item>
                                 {({ active }) => (
                                     <div className=' flex flex-col items-center px-5 py-3 text-black border-b border-gray-300 '>
-                                        <div>Sugoma</div>
-                                        <div className=' text-sm'>abobus@gmail.com</div>
+                                        <div>{session.user.userName}</div>
+                                        <div className=' text-sm'>{session.user.email}</div>
 
                                     </div>
                                 )}

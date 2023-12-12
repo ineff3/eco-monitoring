@@ -4,6 +4,9 @@ import https from 'https';
 import { CustomServerResponse } from '@/types';
 import { CarcinogenicFactorsSchema, NonCarcinogenicFactorsSchema } from '@/schemas';
 import { formatServerErrors, getErrorMessage } from '../secondary-utils/errorHandling';
+import { getServerSession } from "next-auth/next"
+import { authOptions } from "@/app/api/auth/[...nextauth]/route"
+import { redirect } from 'next/navigation';
 
 const agent = new https.Agent({
     rejectUnauthorized: false
@@ -100,6 +103,8 @@ export const getRfcFactors = async () => {
 }
 
 export const getCalculatedCarcinogenicRisk = async (carcinogenicFactors: unknown) => {
+    // const session = await getServerSession(authOptions)
+    // console.log(session)
     try {
         //server-side validation
         const result = CarcinogenicFactorsSchema.safeParse(carcinogenicFactors);
@@ -166,4 +171,33 @@ export const getCalculatedNonCarcinogenicRisk = async (nonCarcinogenicFactors: u
     catch (error) {
         return { error: getErrorMessage(error) }
     }
+}
+export const createUserAccount = async (formData: FormData) => {
+    try {
+        const fetchOptions = {
+            method: 'POST',
+            headers: {
+                'accept': 'text/plain',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                email: formData.get('email'),
+                userName: formData.get('username'),
+                password: formData.get('password'),
+                confirmPassword: formData.get('confirmPassword')
+            }),
+            agent
+        };
+        const response = await fetch(`${link}api/Auth/Register`, fetchOptions)
+
+        const responseBody = await response.json() as CustomServerResponse;
+
+        if (!response.ok) {
+            throw new Error(formatServerErrors(responseBody.errorMessages));
+        }
+    }
+    catch (error) {
+        return { error: getErrorMessage(error) }
+    }
+    redirect('/');
 }
