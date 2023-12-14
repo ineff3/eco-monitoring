@@ -103,6 +103,7 @@ const UserProfile = () => {
                                 alt='account'
                                 width={40}
                                 height={40}
+                                quality={100}
                             />
                         </div>
                     </Menu.Button>
