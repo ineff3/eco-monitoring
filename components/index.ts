@@ -10,6 +10,7 @@ import CustomButton from "./CustomButton";
 import NewsSection from "./news/NewsSection";
 import LoginModal from "./LoginModal";
 import CustomUncontrolledInput from "./CustomUncontrolledInput";
+import Reveal from "./Reveal";
 
 
 export {
@@ -24,5 +25,6 @@ export {
     CustomButton,
     NewsSection,
     LoginModal,
-    CustomUncontrolledInput
+    CustomUncontrolledInput,
+    Reveal
 }

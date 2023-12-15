@@ -11,6 +11,7 @@
   "dependencies": {
     "@headlessui/react": "^1.7.17",
     "chart.js": "^4.4.0",
+    "framer-motion": "^10.16.16",
     "next": "14.0.2",
     "next-auth": "^4.24.5",
     "node-fetch": "^3.3.2",

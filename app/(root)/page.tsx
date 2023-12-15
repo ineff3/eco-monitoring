@@ -5,7 +5,7 @@ const Home = () => {
     return (
         <div className='flex flex-col'>
             <Hero />
-            {/* <Services /> */}
+            <Services />
             <NewsSection />
             <div className=' h-[600px]'>Aboba</div>
         </div>
