@@ -17,7 +17,6 @@ export {
     Navbar,
     Hero,
     Services,
-    SideBar,
     FactorBlock,
     CustomDropdown,
     SuccessfulToast,

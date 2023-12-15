@@ -186,7 +186,7 @@ const NavLinks = () => {
             <div className={`lg:hidden border border-b-black border-opacity-40  w-full ${pathname !== '/' ? ' block' : ' hidden'} `}></div>
 
             <nav className={` w-full lg:w-auto ${pathname !== '/news' ? ' block' : ' hidden'}`} >
-                <Link className={pathname === '/news' ? activeLinkStyles : inactiveLinkStyles + inactiveHoverStyles} href={'/'}>
+                <Link className={pathname === '/news' ? activeLinkStyles : inactiveLinkStyles + inactiveHoverStyles} href={'/news'}>
                     <Image
                         src='/header-icons/news-header.png'
                         alt='News'
@@ -323,6 +323,7 @@ const SearchBar = ({ autofocus }: { autofocus?: boolean }) => {
                         alt='search'
                         width={30}
                         height={35}
+                        quality={100}
                     />
                 </div>
             </div>
