@@ -6,7 +6,7 @@ import { Exo } from 'next/font/google'
 import { LuSettings2 } from "react-icons/lu";
 import { Switch } from '@headlessui/react'
 import { useEffect, useState } from 'react'
-import { CustomCalendar, Reveal } from "@/components";
+import { CustomCalendar, CustomDropdown, Reveal } from "@/components";
 
 const exo = Exo({
     subsets: ['latin'],
@@ -104,7 +104,7 @@ const NewsBlock = () => {
 
 const FilterBar = () => {
     return (
-        <div className=" border border-[#d3d3d3] rounded-[20px] bg-white p-6 flex flex-col gap-7">
+        <div className=" border border-[#d3d3d3] rounded-[20px] overflow-y-auto max-h-[80vh] bg-white p-6 flex flex-col gap-7">
             <div className=' flex items-center justify-between'>
                 <LuSettings2 size={42} />
                 <div className=' relative top-[0.2rem] font-bold text-3xl md:text-4xl tracking-wider'>
@@ -113,6 +113,7 @@ const FilterBar = () => {
             </div>
             <RangeDateFilter />
             <OrderFilter />
+            <AuthorshipFilter />
         </div>
     )
 }
@@ -123,9 +124,9 @@ const OrderFilter = () => {
 
     return (
         <div className=" flex flex-col gap-3 border border-[#d3d3d3] bg-[#f0f0f0] rounded-[10px] p-3">
-            <p>Order</p>
+            <p className=" text-sm">Order</p>
             {orderOptions.map((order) => (
-                <div key={order} className=" flex justify-between text-lg">
+                <div key={order} className=" flex justify-between text-sm">
                     <CustomSwitch
                         switchValue={order}
                         selectedOption={selectedOption}
@@ -170,8 +171,39 @@ const CustomSwitch = ({ switchValue, selectedOption, setSelectedOption }: Custom
 const RangeDateFilter = () => {
     return (
         <div className=" flex flex-col items-center justify-center border border-[#d3d3d3] bg-[#f0f0f0] rounded-[10px] p-3">
-            <p className=" self-start">Date range</p>
+            <p className=" self-start text-sm">Date range</p>
             <CustomCalendar />
+        </div>
+    )
+}
+
+const AuthorshipFilter = () => {
+    const [selectedAuthor, setSelectedAuthor] = useState('Aboba')
+    const authors = ['Aboba', 'Sugoma', 'Misungma'];
+    return (
+        <div className=" flex flex-col gap-3 items-center justify-center border border-[#d3d3d3] bg-[#f0f0f0] rounded-[10px] p-3">
+            <p className=" self-start text-sm">By the authorship</p>
+            <div className=" self-start flex flex-col gap-2">
+                <CustomDropdown
+                    items={authors}
+                    selected={selectedAuthor}
+                    setSelected={setSelectedAuthor}
+                    roundedBg={15}
+                />
+                <CustomDropdown
+                    items={authors}
+                    selected={selectedAuthor}
+                    setSelected={setSelectedAuthor}
+                    roundedBg={15}
+                />
+                <CustomDropdown
+                    items={authors}
+                    selected={selectedAuthor}
+                    setSelected={setSelectedAuthor}
+                    roundedBg={15}
+                />
+            </div>
+
         </div>
     )
 }

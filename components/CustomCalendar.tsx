@@ -24,45 +24,35 @@ const DateRangeComp = () => {
             key: 'selection'
         }
     ])
-
     // open close
     const [open, setOpen] = useState(false)
 
     // get the target element to toggle
     const refOne = useRef<HTMLDivElement | null>(null)
 
+    const handleClickOutside = (event: MouseEvent) => {
+        if (refOne.current && !refOne.current.contains(event.target as Node)) {
+            setOpen(false);
+        }
+    };
+
     useEffect(() => {
-        // event listeners
-        document.addEventListener("keydown", hideOnEscape, true)
-        document.addEventListener("click", hideOnClickOutside, true)
-    }, [])
+        document.addEventListener('click', handleClickOutside);
 
-    // hide dropdown on ESC press
-    const hideOnEscape = (e: any) => {
-        // console.log(e.key)
-        if (e.key === "Escape") {
-            setOpen(false)
-        }
-    }
-
-    // Hide on outside click
-    const hideOnClickOutside = (e: any) => {
-        if (refOne.current && !refOne.current.contains(e.target)) {
-            setOpen(false)
-        }
-    }
+        return () => {
+            document.removeEventListener('click', handleClickOutside);
+        };
+    }, []);
 
     return (
-        <div className={` relative ${exo.className}`}>
-
-            <input
-                value={`${format(range[0].startDate, "MM/dd/yyyy")} - ${format(range[0].endDate, "MM/dd/yyyy")}`}
-                readOnly
-                className=" py-3 w-[223px] px-3 outline-none bg-[#f0f0f0] hover:text-gray-500 "
+        <div className={` relative ${exo.className}`} ref={refOne}>
+            <div
                 onClick={() => setOpen(!open)}
-            />
+                className=" py-3 w-[223px] px-3 outline-none bg-[#f0f0f0] hover:text-gray-500 " >
+                {`${format(range[0].startDate, "MM/dd/yyyy")} - ${format(range[0].endDate, "MM/dd/yyyy")}`}
+            </div>
 
-            <div ref={refOne}>
+            <div>
                 {open &&
                     <DateRange
                         onChange={item => {
@@ -80,13 +70,10 @@ const DateRangeComp = () => {
                         months={1}
                         rangeColors={['#67c9a5']}
                         direction="vertical"
-                        className="absolute z-50 -top-10 right-[270px]"
+                        className="fixed z-50 right-[340px]"
                     />
                 }
             </div>
-
-
-
         </div>
     )
 }

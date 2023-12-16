@@ -14,9 +14,10 @@ interface CustomDropdownProps {
     items: string[]
     selected: string
     setSelected: (selected: string) => void
+    roundedBg?: number
 }
 
-const CustomDropdown = ({ items, selected, setSelected }: CustomDropdownProps) => {
+const CustomDropdown = ({ items, selected, setSelected, roundedBg = 8 }: CustomDropdownProps) => {
     const [open, setOpen] = useState(false);
     const [inputValue, setInputValue] = useState('')
     const dropdownRef = useRef<HTMLDivElement | null>(null);
@@ -38,7 +39,7 @@ const CustomDropdown = ({ items, selected, setSelected }: CustomDropdownProps) =
     return (
         <div className={`flex flex-col w-[200px] relative ${exo.className} `} ref={dropdownRef}>
             <div
-                className=' flex items-center justify-between  border border-[#d3d3d3] pl-3 pr-2 py-2 rounded-[8px]'
+                className={` flex items-center justify-between bg-white border border-[#d3d3d3] pl-3 pr-2 py-2 rounded-[${roundedBg}px]`}
                 onClick={() => setOpen(!open)}
             >
                 <div className={` text-[16px] ${!selected && 'text-[#7f7f7f]'}`}>
