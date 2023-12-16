@@ -6,7 +6,7 @@ import { Exo } from 'next/font/google'
 import { LuSettings2 } from "react-icons/lu";
 import { Switch } from '@headlessui/react'
 import { useEffect, useState } from 'react'
-import { Reveal } from "@/components";
+import { CustomCalendar, Reveal } from "@/components";
 
 const exo = Exo({
     subsets: ['latin'],
@@ -17,7 +17,7 @@ const exo = Exo({
 
 const NewsPage = () => {
     return (
-        <div className=" w-full py-20">
+        <div className=" w-full py-10">
             <div className=" grid grid-cols-[1fr_290px] gap-[60px] px-10">
                 <div className=" flex flex-col gap-[120px] ">
                     <Reveal><NewsBlock /></Reveal>
@@ -42,7 +42,7 @@ export default NewsPage
 
 const NewsBlock = () => {
     return (
-        <div className="border border-[#d3d3d3] rounded-[20px] p-6 min-h-[280px] flex flex-col gap-10 justify-between hover:bg-gray-200 transition-colors duration-200">
+        <div className="border border-[#d3d3d3] bg-white rounded-[20px] p-6 min-h-[280px] flex flex-col gap-10 justify-between hover:bg-gray-200 transition-colors duration-200">
             <div className=" flex font-bold text-xl sm:text-3xl tracking-[0.04rem]">
                 Lorem ipum door siame...
             </div>
@@ -111,8 +111,8 @@ const FilterBar = () => {
                     FILTER
                 </div>
             </div>
-            <OrderFilter />
             <RangeDateFilter />
+            <OrderFilter />
         </div>
     )
 }
@@ -169,19 +169,9 @@ const CustomSwitch = ({ switchValue, selectedOption, setSelectedOption }: Custom
 
 const RangeDateFilter = () => {
     return (
-        <div className=" flex flex-col gap-3 border border-[#d3d3d3] bg-[#f0f0f0] rounded-[10px] p-3">
-            <div className=" flex justify-between items-end">
-                <div className=" flex flex-col">
-                    <p>From</p>
-                    <div className={`${exo.className}`}>12.04.2017</div>
-                </div>
-                <div className=" ">-</div>
-                <div className=" flex flex-col">
-                    <p>To</p>
-                    <div className={`${exo.className}`}>10.12.2023</div>
-                </div>
-
-            </div>
+        <div className=" flex flex-col items-center justify-center border border-[#d3d3d3] bg-[#f0f0f0] rounded-[10px] p-3">
+            <p className=" self-start">Date range</p>
+            <CustomCalendar />
         </div>
     )
 }
