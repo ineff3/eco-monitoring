@@ -10,15 +10,20 @@ const exo = Exo({
 interface CustomButtonProps {
     title: string
     type?: 'submit' | 'reset'
-    additionalStyles?: string
     onClick?: () => void
-
+    styleType?: 'default' | 'light'
+    bgColor?: string
 }
 
-const CustomButton = ({ title, type, additionalStyles, onClick }: CustomButtonProps) => {
+const CustomButton = ({ title, type, onClick, bgColor = 'bg-transparent', styleType = 'default' }: CustomButtonProps) => {
+    const buttonStyles = {
+        default: 'border-[2px] px-5 py-2 text-xl',
+        light: 'border px-4 py-2 text-lg',
+    };
+
     return (
         <button
-            className={` ${additionalStyles} border-[2px] border-black px-5 py-2 text-xl rounded-[10px] hover:bg-slate-200 tracking-wider ${exo.className} `}
+            className={` ${bgColor} ${buttonStyles[styleType]} border-black rounded-[10px] hover:bg-slate-200 duration-150 tracking-wider ${exo.className} `}
             type={type}
             onClick={onClick}
         >

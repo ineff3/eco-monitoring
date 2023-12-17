@@ -4,7 +4,7 @@ import { DateRange } from 'react-date-range'
 import format from 'date-fns/format'
 import { addDays } from 'date-fns'
 import { Exo } from 'next/font/google'
-
+import { BsDashLg } from "react-icons/bs";
 import 'react-date-range/dist/styles.css'
 import 'react-date-range/dist/theme/default.css'
 
@@ -45,11 +45,18 @@ const DateRangeComp = () => {
     }, []);
 
     return (
-        <div className={` relative ${exo.className}`} ref={refOne}>
+        <div className={` w-full relative ${exo.className}`} ref={refOne}>
+            <div className=' flex justify-between'>
+                <div>From</div>
+                <div className=' relative -left-[60px]'>To</div>
+            </div>
             <div
                 onClick={() => setOpen(!open)}
-                className=" py-3 w-[223px] px-3 outline-none bg-[#f0f0f0] hover:text-gray-500 " >
-                {`${format(range[0].startDate, "MM/dd/yyyy")} - ${format(range[0].endDate, "MM/dd/yyyy")}`}
+                className=" flex justify-between items-center outline-none py-1 bg-[#f0f0f0] hover:text-gray-500 " >
+                <div>{format(range[0].startDate, "MM.dd.yyyy")}</div>
+                <BsDashLg />
+                <div>{format(range[0].endDate, "MM.dd.yyyy")}</div>
+                {/* {`${format(range[0].startDate, "MM.dd.yyyy")} - ${format(range[0].endDate, "MM.dd.yyyy")}`} */}
             </div>
 
             <div>
@@ -70,7 +77,7 @@ const DateRangeComp = () => {
                         months={1}
                         rangeColors={['#67c9a5']}
                         direction="vertical"
-                        className="fixed z-50 right-[340px]"
+                        className="fixed z-50 left-[57%]"
                     />
                 }
             </div>

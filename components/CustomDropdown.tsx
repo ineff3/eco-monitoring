@@ -14,10 +14,13 @@ interface CustomDropdownProps {
     items: string[]
     selected: string
     setSelected: (selected: string) => void
-    roundedBg?: number
+    roundedBg?: string
+    paddingY?: string
 }
 
-const CustomDropdown = ({ items, selected, setSelected, roundedBg = 8 }: CustomDropdownProps) => {
+const CustomDropdown = ({ items, selected, setSelected, roundedBg = 'rounded-[8px]', paddingY = 'py-2' }
+    : CustomDropdownProps
+) => {
     const [open, setOpen] = useState(false);
     const [inputValue, setInputValue] = useState('')
     const dropdownRef = useRef<HTMLDivElement | null>(null);
@@ -39,7 +42,7 @@ const CustomDropdown = ({ items, selected, setSelected, roundedBg = 8 }: CustomD
     return (
         <div className={`flex flex-col w-[200px] relative ${exo.className} `} ref={dropdownRef}>
             <div
-                className={` flex items-center justify-between bg-white border border-[#d3d3d3] pl-3 pr-2 py-2 rounded-[${roundedBg}px]`}
+                className={` flex items-center justify-between bg-white border border-[#d3d3d3] pl-3 pr-2 ${paddingY} ${roundedBg}`}
                 onClick={() => setOpen(!open)}
             >
                 <div className={` text-[16px] ${!selected && 'text-[#7f7f7f]'}`}>
@@ -49,7 +52,7 @@ const CustomDropdown = ({ items, selected, setSelected, roundedBg = 8 }: CustomD
                 </div>
                 <RiArrowDownSLine size={25} className={` ${open && 'rotate-180'}`} />
             </div>
-            <ul className={` bg-white w-[200px] border border-[#d3d3d3] max-h-[243px] overflow-y-auto ${!open ? 'hidden' : 'absolute top-[52px]'} z-10`}>
+            <ul className={` bg-white w-[200px] border border-[#d3d3d3] max-h-[243px] overflow-y-auto ${!open ? 'hidden' : 'absolute top-[52px]'} z-10 shadow-xl rounded-lg`}>
                 <div className='  flex items-center pl-3 pr-3 py-2 text-[14px] text-[#7f7f7f] gap-2 border-b'>
                     <PiMagnifyingGlass size={17} />
                     <input

@@ -11,6 +11,7 @@ import LoginModal from "./LoginModal";
 import CustomUncontrolledInput from "./CustomUncontrolledInput";
 import Reveal from "./Reveal";
 import CustomCalendar from "./CustomCalendar";
+import CircularBtn from "./CircularBtn";
 
 
 export {
@@ -26,5 +27,6 @@ export {
     LoginModal,
     CustomUncontrolledInput,
     Reveal,
-    CustomCalendar
+    CustomCalendar,
+    CircularBtn
 }

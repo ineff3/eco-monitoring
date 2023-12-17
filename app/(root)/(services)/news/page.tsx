@@ -6,7 +6,7 @@ import { Exo } from 'next/font/google'
 import { LuSettings2 } from "react-icons/lu";
 import { Switch } from '@headlessui/react'
 import { useEffect, useState } from 'react'
-import { CustomCalendar, CustomDropdown, Reveal } from "@/components";
+import { CircularBtn, CustomButton, CustomCalendar, CustomDropdown, Reveal } from "@/components";
 
 const exo = Exo({
     subsets: ['latin'],
@@ -19,18 +19,29 @@ const NewsPage = () => {
     return (
         <div className=" w-full py-10">
             <div className=" grid grid-cols-[1fr_290px] gap-[60px] px-10">
-                <div className=" flex flex-col gap-[120px] ">
-                    <Reveal><NewsBlock /></Reveal>
-                    <Reveal><NewsBlock /></Reveal>
-                    <Reveal><NewsBlock /></Reveal>
-                    <Reveal><NewsBlock /></Reveal>
-                    <Reveal><NewsBlock /></Reveal>
+
+                <div className=" flex flex-col gap-10 ">
+                    <div className=" flex flex-col gap-[120px]">
+                        <Reveal><NewsBlock /></Reveal>
+                        <Reveal><NewsBlock /></Reveal>
+                        <Reveal><NewsBlock /></Reveal>
+                        <Reveal><NewsBlock /></Reveal>
+                        <Reveal><NewsBlock /></Reveal>
+                    </div>
+                    <div className=" w-full flex flex-col items-center">
+                        <button className={` max-w-fit bg-white rounded-[24px] border border-[#d3d3d3] px-20 py-2 text-lg ${exo.className} tracking-widest hover:bg-slate-200 duration-200 `}>
+                            SHOW MORE
+                        </button>
+                        <div className=" -z-10 relative -top-[23px] w-full h-[2px] bg-[#d3d3d3]"></div>
+                    </div>
                 </div>
-                <div className="">
+
+                <div>
                     <div className=" fixed w-[290px] ">
                         <FilterBar />
                     </div>
                 </div>
+
             </div>
 
         </div>
@@ -74,7 +85,7 @@ const NewsBlock = () => {
                     </div>
                 </div>
                 <div className=" flex flex-col justify-end border-b border-black" >
-                    <p className=' text-lg'>
+                    <p className=' text-lg tracking-wider'>
                         SOURCE
                     </p>
                 </div>
@@ -106,14 +117,27 @@ const FilterBar = () => {
     return (
         <div className=" border border-[#d3d3d3] rounded-[20px] overflow-y-auto max-h-[80vh] bg-white p-6 flex flex-col gap-7">
             <div className=' flex items-center justify-between'>
-                <LuSettings2 size={42} />
-                <div className=' relative top-[0.2rem] font-bold text-3xl md:text-4xl tracking-wider'>
+                <LuSettings2 size={35} />
+                <div className=' relative top-[0.2rem] font-bold text-3xl md:text-3xl tracking-wider'>
                     FILTER
                 </div>
             </div>
             <RangeDateFilter />
             <OrderFilter />
             <AuthorshipFilter />
+            <div className=" flex justify-between">
+                <CustomButton
+                    title='APPLY'
+                    type='submit'
+                    styleType='light'
+                />
+                <CustomButton
+                    title='RESET'
+                    type='reset'
+                    bgColor='bg-[#d3d3d3]'
+                    styleType='light'
+                />
+            </div>
         </div>
     )
 }
@@ -171,7 +195,6 @@ const CustomSwitch = ({ switchValue, selectedOption, setSelectedOption }: Custom
 const RangeDateFilter = () => {
     return (
         <div className=" flex flex-col items-center justify-center border border-[#d3d3d3] bg-[#f0f0f0] rounded-[10px] p-3">
-            <p className=" self-start text-sm">Date range</p>
             <CustomCalendar />
         </div>
     )
@@ -188,21 +211,27 @@ const AuthorshipFilter = () => {
                     items={authors}
                     selected={selectedAuthor}
                     setSelected={setSelectedAuthor}
-                    roundedBg={15}
+                    roundedBg='rounded-[15px]'
+                    paddingY='py-1'
                 />
                 <CustomDropdown
                     items={authors}
                     selected={selectedAuthor}
                     setSelected={setSelectedAuthor}
-                    roundedBg={15}
+                    roundedBg='rounded-[15px]'
+                    paddingY='py-1'
                 />
                 <CustomDropdown
                     items={authors}
                     selected={selectedAuthor}
                     setSelected={setSelectedAuthor}
-                    roundedBg={15}
+                    roundedBg='rounded-[15px]'
+                    paddingY='py-1'
                 />
             </div>
+            <CircularBtn
+                mode="add"
+            />
 
         </div>
     )
