@@ -36,3 +36,13 @@ export const NonCarcinogenicFactorsSchema = z.object({
     c: DefaultFactorSchema('C'),
     rfc: DefaultFactorSchema('Rfc')
 })
+
+export const CompensationFactorsSchema = z.object({
+    env_factor: DefaultFactorSchema('Ca'),
+    mass_flow_rate: DefaultFactorSchema('Mfr'),
+    pop: DefaultFactorSchema('Pop'),
+    min_salary: DefaultFactorSchema('Ms'),
+    kf: DefaultFactorSchema('Kf'),
+    time_hours: DefaultTimeFactorSchema('Time', 8760),
+    gdk: DefaultFactorSchema('Mpe')
+})

@@ -67,9 +67,15 @@ const CustomDropdownEnhanced = ({ items, selected, setSelected, roundedBg = 'rou
                 {items.map((item, index) => (
                     <li
                         key={index}
-                        className={`  pl-3 pr-3 py-2 text-[14px]  ${selected[displayField]?.toLowerCase() === item[displayField].toLowerCase() ? 'bg-dark bg-opacity-80 text-white' : 'hover:bg-gray-100'} ${item[displayField].toLowerCase().startsWith(inputValue) ? 'block' : 'hidden'}`}
+                        className={`  pl-3 pr-3 py-2 text-[14px]  ${selected && String(selected[displayField])?.toLowerCase() === String(item[displayField]).toLowerCase() ? 'bg-dark bg-opacity-80 text-white' : 'hover:bg-gray-100'} ${String(item[displayField]).toLowerCase().startsWith(inputValue) ? 'block' : 'hidden'}`}
                         onClick={() => {
-                            if (item[displayField].toLocaleLowerCase() !== selected[displayField]?.toLocaleLowerCase()) {
+                            if (selected) {
+                                if (String(item[displayField]).toLocaleLowerCase() !== String(selected[displayField])?.toLocaleLowerCase()) {
+                                    setSelected(item)
+                                    setOpen(!open)
+                                    setInputValue('')
+                                }
+                            } else {
                                 setSelected(item)
                                 setOpen(!open)
                                 setInputValue('')

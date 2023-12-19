@@ -5,19 +5,33 @@ export interface CustomServerResponse {
     errorMessages: string[];
     result: any[];
 }
-
+export interface CustomServerResponseObj {
+    statusCode: number;
+    isSuccess: boolean;
+    errorMessages: string[];
+    result: any;
+}
 
 export interface CompanyType {
     name: string;
     description: string;
     location: string
     id: number;
+    city_id: number
+}
+export interface CityType {
+    id: number
+    name: string
+    population: number
+    isResort: boolean
+    region_id: number
 }
 
 export interface PassportType {
     id: number
     company_id: string,
     year: string
+    source_operating_time: number
 }
 
 export interface PollutionType {
@@ -35,6 +49,9 @@ export interface RfcFactorType {
     factor_Name: string
     factor_value: number
     damaged_organs: string
+    sF_value: number
+    gdK_value: number
+    mass_flow_rate: number
 }
 
 export interface passportsWithCompaniesType extends PassportType {

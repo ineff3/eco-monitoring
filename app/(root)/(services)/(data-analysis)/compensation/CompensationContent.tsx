@@ -3,8 +3,12 @@ import { useState, useEffect } from 'react'
 import Image from 'next/image'
 import { Exo } from 'next/font/google'
 import { CustomButton, CustomDropdown, CustomDropdownEnhanced, ErrorToast, FactorBlock, SuccessfulToast } from '@/components';
-import { CompanyType } from '@/types';
-import { getPassportsByCompanyId } from '@/actions/basic-actions/actions';
+import { CityType, CompanyType, PassportType, PollutionType, RfcFactorType } from '@/types';
+import { getCalculatedCompensation, getCityByCompanyId, getPassportsByCompanyId, getPollutions, getPollutionsByPassportId, getRfcFactorById } from '@/actions/basic-actions/actions';
+import { CompensationFactorsSchema } from '@/schemas';
+import { ZodIssue } from 'zod';
+import { toast } from 'react-hot-toast';
+import CompensationBarchart from './CompensationBarchart';
 
 const exo = Exo({
     subsets: ['latin'],
@@ -13,37 +17,100 @@ const exo = Exo({
 })
 
 interface CompensationFactorsType {
-    ca: string,
-    mfr: string,
+    env_factor: string,
+    mass_flow_rate: string,
     pop: string
-    ms: string
+    min_salary: string
     kf: string
-    time: string
-    mpe: string
+    time_hours: string
+    gdk: string
 }
 interface Props {
     companies: CompanyType[]
 }
 const CompensationContent = ({ companies }: Props) => {
     const [compensationData, setCompensationData] = useState<CompensationFactorsType>({
-        ca: '',
-        mfr: '',
+        env_factor: '',
+        mass_flow_rate: '',
         pop: '',
-        ms: '',
+        min_salary: '3400',
         kf: '',
-        time: '',
-        mpe: ''
+        time_hours: '',
+        gdk: ''
     })
-    const [selectedCompany, setSelectedCompany] = useState('');
-    const [selectedPassport, setSelectedPassport] = useState('');
-    const [selectedSubstance, setSelectedSubstance] = useState('');
+    const [results, setResults] = useState({
+        compensation: '',
+        permitAmount: '',
+        actualAmount: ''
+    })
+    const [selectedCompany, setSelectedCompany] = useState<CompanyType | null>(null);
+    const [selectedPassport, setSelectedPassport] = useState<PassportType | null>(null);
+    const [selectedSubstance, setSelectedSubstance] = useState<PollutionType | null>(null);
     const [possiblePassports, setPossiblePassports] = useState([])
+    const [possibleSubstances, setPossibleSubstances] = useState([])
 
+    //cleares the selectedPassport and possibleSubstances and fetches possiblePassports when company changes
     useEffect(() => {
-        // const passports = getPassportsByCompanyId(selectedCompany.id)
+        setSelectedPassport(null)
+        setPossibleSubstances([])
+
+        const fetchCityAndSetDefaultFactorValues = async () => {
+            if (selectedCompany !== null) {
+                const result = await getCityByCompanyId(selectedCompany?.city_id) as CityType
+                setCompensationData({
+                    ...compensationData,
+                    pop: result ? String(result.population) : '',
+                    kf: result ? (result.isResort ? '1.65' : '1') : ''
+                })
+            }
+        }
+        const fetchAndSetPossiblePassports = async () => {
+            if (selectedCompany !== null) {
+                const result = await getPassportsByCompanyId(selectedCompany?.id) as any;
+                setPossiblePassports(result)
+            }
+        }
+        fetchCityAndSetDefaultFactorValues();
+        fetchAndSetPossiblePassports();
     }, [selectedCompany])
 
-    const aboba = ['Aboba1', 'Aboba2', 'Aboba3']
+    //cleares selectedSubstance and fetches possibleSubstances when passport changes
+    useEffect(() => {
+        setSelectedSubstance(null)
+
+        //setting default factor values
+        if (selectedPassport !== null) {
+            setCompensationData({
+                ...compensationData,
+                time_hours: String(selectedPassport.source_operating_time)
+            })
+        }
+
+        const fetchAndSetPossibleSubstances = async () => {
+            if (selectedPassport !== null) {
+                const result = await getPollutionsByPassportId(selectedPassport?.id) as any
+                setPossibleSubstances(result)
+            }
+        }
+        fetchAndSetPossibleSubstances();
+    }, [selectedPassport])
+
+    //sets deafult values when selectedSubstance changes
+    useEffect(() => {
+        const fetchRfcFactorAndSetDeafultFactorValues = async () => {
+            if (selectedSubstance !== null) {
+                const result = await getRfcFactorById(Number(selectedSubstance?.rfc_factor_id)) as RfcFactorType
+                setCompensationData({
+                    ...compensationData,
+                    env_factor: String(selectedSubstance.factor_value),
+                    mass_flow_rate: result ? String(result.mass_flow_rate) : '',
+                    gdk: result ? String(result.gdK_value) : ''
+                })
+            }
+        }
+        fetchRfcFactorAndSetDeafultFactorValues()
+    }, [selectedSubstance])
+
     const handleCompensationFactorsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setCompensationData({
             ...compensationData,
@@ -61,21 +128,66 @@ const CompensationContent = ({ companies }: Props) => {
             return !isNaN(numericValue) && numericValue > 0 && numericValue <= upperLimit;
         };
     };
+    const handleSchemaIssues = (errors: ZodIssue[]) => {
+        let errorMessage = '';
+        errors.forEach((err) => {
+            errorMessage += err.path[0] + ': ' + err.message + '. '
+        })
+        toast.custom((t) => <ErrorToast t={t} message={errorMessage} />);
+    }
+    const resetAllSelectedFields = () => {
+        setSelectedCompany(null)
+        setPossiblePassports([])
+        setPossibleSubstances([])
+        setCompensationData({
+            env_factor: '',
+            mass_flow_rate: '',
+            pop: '',
+            min_salary: '3400',
+            kf: '',
+            time_hours: '',
+            gdk: ''
+        })
+    }
+    const clientGetCalculatedCompensation = async () => {
+        //client-side validation
+        const result = CompensationFactorsSchema.safeParse(compensationData);
+        if (!result.success) {
+            handleSchemaIssues(result.error.issues)
+            return;
+        }
+
+        //server response + error handling
+        const response = await getCalculatedCompensation(result.data);
+        if (response && typeof response === 'object' && 'error' in response) {
+            toast.custom((t) => <ErrorToast t={t} message={response.error} />);
+        } else {
+            const compens = response[0] as number
+            setResults({
+                compensation: compens.toFixed(2),
+                permitAmount: response[1],
+                actualAmount: response[2],
+            })
+            toast.custom((t) => <SuccessfulToast t={t} message='Carcinogenic risk successfuly calculated' />, { duration: 2500 });
+        }
+
+    }
+
 
     return (
         <div className={`w-full flex flex-col gap-6 py-5 sm:py-12 px-4 sm:px-10`}>
-            <form>
+            <form action={clientGetCalculatedCompensation}>
                 <div className=' grid grid-rows-[repeat(auto-fill,minmax(210px,1fr))] grid-cols-[repeat(auto-fit,minmax(200px,1fr))]  gap-5'>
                     <div className=' order-1'>
                         <FactorBlock
                             pathToIcon='/factor-icons/chemistry.png'
                             altText='chemistry'
-                            tagName='Ca'
-                            desc='Concentration of the substance in the ambient air'
+                            tagName='MES'
+                            desc='Mass of the emitted substance'
                             quantity='mg/m³'
-                            name='ca'
+                            name='env_factor'
                             handleChange={handleCompensationFactorsChange}
-                            value={compensationData.ca}
+                            value={compensationData.env_factor}
                             validation={positiveNumberValidation}
                         />
                     </div>
@@ -86,9 +198,9 @@ const CompensationContent = ({ companies }: Props) => {
                             tagName='MFR'
                             desc='Approved emission standard value'
                             quantity='mg/m³'
-                            name='mfr'
+                            name='mass_flow_rate'
                             handleChange={handleCompensationFactorsChange}
-                            value={compensationData.mfr}
+                            value={compensationData.mass_flow_rate}
                             validation={positiveNumberValidation}
                         />
                     </div>
@@ -110,9 +222,10 @@ const CompensationContent = ({ companies }: Props) => {
                             altText='salary'
                             tagName='MS'
                             desc='The amount of the minimum salary'
-                            name='ms'
+                            name='min_salary'
+                            quantity='UAH'
                             handleChange={handleCompensationFactorsChange}
-                            value={compensationData.ms}
+                            value={compensationData.min_salary}
                             validation={positiveNumberValidation}
                         />
                     </div>
@@ -170,15 +283,18 @@ const CompensationContent = ({ companies }: Props) => {
                                 <p className=' max-w-[83px] sm:text-base md:text-sm'>
                                     Substance
                                 </p>
-                                <CustomDropdown
-                                    items={aboba}
+                                <CustomDropdownEnhanced
+                                    items={possibleSubstances}
                                     selected={selectedSubstance}
                                     setSelected={setSelectedSubstance}
+                                    displayField='factor_Name'
+
                                 />
                             </div>
                             <CustomButton
                                 title='RESET'
                                 type='reset'
+                                onClick={resetAllSelectedFields}
                             />
 
                         </div>
@@ -190,9 +306,10 @@ const CompensationContent = ({ companies }: Props) => {
                             altText='time'
                             tagName='Time'
                             desc='Operating time of the emission source'
-                            name='time'
+                            name='time_hours'
+                            quantity='h/year'
                             handleChange={handleCompensationFactorsChange}
-                            value={compensationData.time}
+                            value={compensationData.time_hours}
                             validation={positiveNumberWithUpperLimitValidation(8760)}
                         />
                     </div>
@@ -208,11 +325,20 @@ const CompensationContent = ({ companies }: Props) => {
                                 />
                                 <div className=' relative top-[0.2rem] font-bold text-3xl md:text-4xl tracking-wider border border-[#d3d3d3] bg-primary rounded-[10px] px-3 pb-[0.1rem] pt-[0.3rem]'>COMP</div>
                             </div>
+                            <div className={` h-[190px] `}>
+                                <CompensationBarchart
+                                    dataValues={[Number(results.permitAmount), Number(results.actualAmount)]}
+                                    satisfies={Number(results.actualAmount) <= Number(results.permitAmount)}
+
+                                />
+                            </div>
                             <div className=' flex flex-col gap-8 flex-auto'>
-                                <p className=' text-sm'>Comp Amounts of compensation required to be paid 20462.5 UAH Calculate</p>
-                                <div className=' flex flex-wrap gap-2 items-center'>
-                                    <p className={`text-xl font-light break-words ${exo.className}`}>20462.5</p>
-                                    <div className={` text-[#7f7f7f]`}>UAH</div>
+                                <div className=' flex flex-col gap-2'>
+                                    <p className=' text-sm'>Amounts of compensation required to be paid</p>
+                                    <div className=' flex flex-wrap gap-2 items-center'>
+                                        <p className={`text-xl font-light break-words ${exo.className}`}>{results.compensation}</p>
+                                        <div className={` text-[#7f7f7f] ${results.compensation ? 'block' : 'hidden'}`}>UAH</div>
+                                    </div>
                                 </div>
                                 <div className=' flex flex-auto items-end'>
                                     <CustomButton
@@ -230,9 +356,10 @@ const CompensationContent = ({ companies }: Props) => {
                             altText='emission'
                             tagName='MPE'
                             desc='Maximum permissible emission'
-                            name='mpe'
+                            name='gdk'
+                            quantity='g/sec'
                             handleChange={handleCompensationFactorsChange}
-                            value={compensationData.mpe}
+                            value={compensationData.gdk}
                             validation={positiveNumberValidation}
                         />
                     </div>
