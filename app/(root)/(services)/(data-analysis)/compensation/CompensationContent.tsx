@@ -168,7 +168,7 @@ const CompensationContent = ({ companies }: Props) => {
                 permitAmount: response[1],
                 actualAmount: response[2],
             })
-            toast.custom((t) => <SuccessfulToast t={t} message='Carcinogenic risk successfuly calculated' />, { duration: 2500 });
+            toast.custom((t) => <SuccessfulToast t={t} message='Compensation successfuly calculated' />, { duration: 2500 });
         }
 
     }
@@ -255,7 +255,7 @@ const CompensationContent = ({ companies }: Props) => {
                                 DEFAULT VALUES
                             </div>
                         </div>
-                        <div className=' flex flex-col flex-auto gap-4 lg:gap-0  justify-between items-center sm:px-5'>
+                        <div className=' flex flex-col flex-auto gap-4 lg:gap-0  justify-between items-center '>
 
                             <div className=' flex flex-col sm:flex-row items-center w-full justify-between '>
                                 <p className=' max-w-[83px] sm:text-base md:text-sm'>
@@ -291,11 +291,13 @@ const CompensationContent = ({ companies }: Props) => {
 
                                 />
                             </div>
-                            <CustomButton
-                                title='RESET'
-                                type='reset'
-                                onClick={resetAllSelectedFields}
-                            />
+                            <div className=' lg:self-start'>
+                                <CustomButton
+                                    title='RESET'
+                                    type='reset'
+                                    onClick={resetAllSelectedFields}
+                                />
+                            </div>
 
                         </div>
                     </div>
@@ -329,7 +331,6 @@ const CompensationContent = ({ companies }: Props) => {
                                 <CompensationBarchart
                                     dataValues={[Number(results.permitAmount), Number(results.actualAmount)]}
                                     satisfies={Number(results.actualAmount) <= Number(results.permitAmount)}
-
                                 />
                             </div>
                             <div className=' flex flex-col gap-8 flex-auto'>
