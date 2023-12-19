@@ -54,6 +54,12 @@ const SideBar = () => {
                     </div>
                     <RiArrowDownSLine size={27} className={` ${pathname === '/non-carcinogenic-risk' && ' text-[#4e7a54] rounded-full bg-primary'} -rotate-90`} />
                 </Link>
+                <Link href={'/compensation'} className={pathname === '/compensation' ? activeLinkStyles : inactiveLinkStyles}>
+                    <div className={` relative top-[0.1rem] ${pathname === '/compensation' && 'border-b-2 border-[#4e7a54]'}`}>
+                        Compensation for damages
+                    </div>
+                    <RiArrowDownSLine size={27} className={` ${pathname === '/compensation' && ' text-[#4e7a54] rounded-full bg-primary'} -rotate-90`} />
+                </Link>
             </div>
 
         </div>

@@ -15,7 +15,7 @@ interface FactorBlockProps {
     altText: string
     tagName: string
     desc: string
-    quantity: string,
+    quantity?: string,
     name: string;
     handleChange: ChangeEventHandler<HTMLInputElement>;
     value: string;

@@ -52,6 +52,8 @@ export interface CarcinogenicDataType {
     ed: string,
     bw: string,
     at: string
+    sf: string
+    pop: string
 }
 export interface BodyType {
     type: string

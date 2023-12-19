@@ -57,6 +57,27 @@ export const getPassports = async () => {
         return [];
     }
 }
+export const getPassportsByCompanyId = async (id: number) => {
+    const fetchOptions = {
+        method: 'GET',
+        agent,
+    };
+
+    try {
+        const response = await fetch(`${link}api/PassportData/GetPassportsByCompany?company_id=${id}`, fetchOptions);
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        const data = await response.json() as CustomServerResponse;
+
+        return data.result;
+    } catch (error) {
+        console.error('Error:', error);
+        return [];
+    }
+}
 
 export const getPollutions = async () => {
     const fetchOptions = {
@@ -131,8 +152,7 @@ export const getCalculatedCarcinogenicRisk = async (carcinogenicFactors: unknown
             throw new Error(formatServerErrors(responseBody.errorMessages));
         }
         const data = await response.json() as CustomServerResponse;
-
-        return Number(data.result);
+        return data.result;
     }
     catch (error) {
         return { error: getErrorMessage(error) }

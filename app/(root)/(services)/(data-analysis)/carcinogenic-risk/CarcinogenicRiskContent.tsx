@@ -24,7 +24,10 @@ interface CarcinogenicRiskContentProps {
 
 const CarcinogenicRiskContent = ({ pollutions, companyNames, passportsWithCompanies
 }: CarcinogenicRiskContentProps) => {
-    const [calculatedCarcinogenicRisk, setCalculatedCarcinogenicRisk] = useState('')
+    const [results, setResults] = useState({
+        risk: '',
+        riskByPop: ''
+    })
 
     const [possiblePassports, setPossiblePassports] = useState<string[]>([])
     const [possibleSubstances, setPossibleSubstances] = useState<string[]>([]);
@@ -44,11 +47,14 @@ const CarcinogenicRiskContent = ({ pollutions, companyNames, passportsWithCompan
         ef: '350',
         ed: '30',
         bw: '',
-        at: '70'
+        at: '70',
+        sf: '1',
+        pop: '300000'
     })
 
     //finding passports relating to specific company name
     useEffect(() => {
+        console.log(passportsWithCompanies)
         setPossiblePassports(passportsWithCompanies
             .filter((passport) => passport.company_name === selectedCompany)
             .map(passport => (String(passport.year)))
@@ -74,19 +80,19 @@ const CarcinogenicRiskContent = ({ pollutions, companyNames, passportsWithCompan
         setSelectedSubstance('')
     }, [selectedPassport])
 
-    //sets default Ca, Ch values when passport changed, also cleares inputs when substance sets to ''
+    //sets default Ca, Ch, Sf values when passport changed, also cleares inputs when substance sets to ''
     useEffect(() => {
         const selectedPassportId = getSelectedPassportId();
         if (selectedPassportId !== undefined) {
             const filteredPollutionsByPassport = getSubstancesByPassportId(selectedPassportId);
             const selectedSubstanceByPassport = filteredPollutionsByPassport.find(poll => poll.factor_Name == selectedSubstance)
+            console.log(selectedSubstanceByPassport)
             const caValue = selectedSubstanceByPassport?.factor_Ca_value;
             const chValue = selectedSubstanceByPassport?.factor_Ch_value;
             setCarcinogenicData({
                 ...carcinogenicData,
                 ca: caValue !== undefined ? String(caValue) : '',
                 ch: chValue !== undefined ? String(chValue) : ''
-
             })
 
         }
@@ -141,7 +147,11 @@ const CarcinogenicRiskContent = ({ pollutions, companyNames, passportsWithCompan
         if (response && typeof response === 'object' && 'error' in response) {
             toast.custom((t) => <ErrorToast t={t} message={response.error} />);
         } else {
-            setCalculatedCarcinogenicRisk(String(response))
+            // setCalculatedCarcinogenicRisk(String(response))
+            setResults({
+                risk: response[0],
+                riskByPop: response[1]
+            })
             toast.custom((t) => <SuccessfulToast t={t} message='Carcinogenic risk successfuly calculated' />, { duration: 2500 });
         }
 
@@ -167,7 +177,9 @@ const CarcinogenicRiskContent = ({ pollutions, companyNames, passportsWithCompan
             ef: '350',
             ed: '30',
             bw: '',
-            at: '70'
+            at: '70',
+            sf: '1',
+            pop: '300000'
         })
         setSelectedCompany('')
         setSelectedBodyType('')
@@ -290,7 +302,7 @@ const CarcinogenicRiskContent = ({ pollutions, companyNames, passportsWithCompan
                         />
                     </>
                     <div className=' bg-white border border-[#d3d3d3] rounded-[20px] p-6 col-span-full xl:col-span-3 flex flex-col min-h-[320px]'>
-                        <div className=' flex flex-col gap-2 md:gap-8'>
+                        <div className=' flex flex-auto flex-col gap-2 md:gap-8'>
                             <div className=' flex items-center justify-center sm:justify-between'>
                                 <Image
                                     src='/settings-icon.png'
@@ -345,15 +357,15 @@ const CarcinogenicRiskContent = ({ pollutions, companyNames, passportsWithCompan
                                             setSelected={setSelectedBodyType}
                                         />
                                     </div>
-                                    <div className=' flex flex-auto justify-center md:justify-end'>
-                                        <CustomButton
-                                            title='RESET'
-                                            type='reset'
-                                            onClick={resetAllSelectedFields}
-                                        />
-                                    </div>
                                 </div>
 
+                            </div>
+                            <div className=' flex flex-auto items-end justify-center md:justify-end'>
+                                <CustomButton
+                                    title='RESET'
+                                    type='reset'
+                                    onClick={resetAllSelectedFields}
+                                />
                             </div>
                         </div>
 
@@ -368,13 +380,16 @@ const CarcinogenicRiskContent = ({ pollutions, companyNames, passportsWithCompan
                                     height={43}
                                     quality={100}
                                 />
-                                <div className=' relative top-[0.2rem] font-bold text-3xl md:text-4xl tracking-wider border border-[#d3d3d3] bg-primary rounded-[10px] px-3 pb-[0.1rem] pt-[0.3rem]'>LADD</div>
+                                <div className=' relative top-[0.2rem] font-bold text-3xl md:text-4xl tracking-wider border border-[#d3d3d3] bg-primary rounded-[10px] px-3 pb-[0.1rem] pt-[0.3rem]'>CR/PCR</div>
                             </div>
-                            <div className=' flex flex-col gap-8 flex-auto'>
-                                <p className=' text-sm'>The average daily dose of exposure to a substance for the city' population</p>
-                                <div className=' flex flex-wrap gap-2 items-center'>
-                                    <p className={`text-xl font-light break-words ${exo.className}`}>{calculatedCarcinogenicRisk}</p>
-                                    <div className={` text-[#7f7f7f] ${calculatedCarcinogenicRisk === '' ? 'hidden' : 'block'}`}>mg/kg-day</div>
+                            <div className=' flex flex-col gap-5 flex-auto'>
+                                <div className=' flex flex-col gap-2'>
+                                    <p className=' text-sm'>Individual carcinogenic risk:</p>
+                                    <p className={`flex-wrap text-xl font-light break-words border-b border-dark ${exo.className}`}>{results.risk}</p>
+                                </div>
+                                <div className=' flex flex-col gap-2'>
+                                    <p className=' text-sm'>Carcinogenic risk for the population of {carcinogenicData.pop} thousand:</p>
+                                    <p className={`flex-wrap text-xl font-light break-words border-b border-dark ${exo.className}`}>{results.riskByPop}</p>
                                 </div>
                                 <div className=' flex flex-auto items-end'>
                                     <CustomButton

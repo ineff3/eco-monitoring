@@ -27,7 +27,9 @@ export const CarcinogenicFactorsSchema = z.object({
     ef: DefaultFactorSchema('Ef'),
     ed: DefaultTimeFactorSchema('Ed', 365),
     bw: DefaultTimeFactorSchema('Bw', 300),
-    at: DefaultFactorSchema('At')
+    at: DefaultFactorSchema('At'),
+    sf: DefaultFactorSchema('Sf'),
+    pop: DefaultFactorSchema('Pop')
 })
 
 export const NonCarcinogenicFactorsSchema = z.object({

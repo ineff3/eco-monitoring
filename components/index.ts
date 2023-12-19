@@ -12,6 +12,7 @@ import CustomUncontrolledInput from "./CustomUncontrolledInput";
 import Reveal from "./Reveal";
 import CustomCalendar from "./CustomCalendar";
 import CircularBtn from "./CircularBtn";
+import CustomDropdownEnhanced from "./CustomDropdownEnhanced";
 
 
 export {
@@ -28,5 +29,6 @@ export {
     CustomUncontrolledInput,
     Reveal,
     CustomCalendar,
-    CircularBtn
+    CircularBtn,
+    CustomDropdownEnhanced
 }

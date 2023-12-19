@@ -26,6 +26,9 @@ const config: Config = {
         'xl': '1280px',
         // => @media (min-width: 1280px) { ... }
 
+        '1/5xl': '1440px',
+        // => @media (min-width: 1440px) { ... }
+
         '2xl': '1700px',
         // => @media (min-width: 1700px) { ... }
       },
