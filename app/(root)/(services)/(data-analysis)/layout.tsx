@@ -60,6 +60,12 @@ const SideBar = () => {
                     </div>
                     <RiArrowDownSLine size={27} className={` ${pathname === '/compensation' && ' text-[#4e7a54] rounded-full bg-primary'} -rotate-90`} />
                 </Link>
+                <Link href={'/emission-taxes'} className={pathname === '/emission-taxes' ? activeLinkStyles : inactiveLinkStyles}>
+                    <div className={` relative top-[0.1rem] ${pathname === '/emission-taxes' && 'border-b-2 border-[#4e7a54]'}`}>
+                        Emission taxes
+                    </div>
+                    <RiArrowDownSLine size={27} className={` ${pathname === '/emission-taxes' && ' text-[#4e7a54] rounded-full bg-primary'} -rotate-90`} />
+                </Link>
             </div>
 
         </div>

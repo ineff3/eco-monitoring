@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react'
 import Image from 'next/image'
 import { Exo } from 'next/font/google'
-import { CustomButton, CustomDropdown, CustomDropdownEnhanced, ErrorToast, FactorBlock, SuccessfulToast } from '@/components';
+import { CustomButton, CustomDropdownEnhanced, ErrorToast, FactorBlock, SuccessfulToast } from '@/components';
 import { CityType, CompanyType, PassportType, PollutionType, RfcFactorType } from '@/types';
 import { getCalculatedCompensation, getCityByCompanyId, getPassportsByCompanyId, getPollutions, getPollutionsByPassportId, getRfcFactorById } from '@/actions/basic-actions/actions';
 import { CompensationFactorsSchema } from '@/schemas';

@@ -54,7 +54,6 @@ const CarcinogenicRiskContent = ({ pollutions, companyNames, passportsWithCompan
 
     //finding passports relating to specific company name
     useEffect(() => {
-        console.log(passportsWithCompanies)
         setPossiblePassports(passportsWithCompanies
             .filter((passport) => passport.company_name === selectedCompany)
             .map(passport => (String(passport.year)))

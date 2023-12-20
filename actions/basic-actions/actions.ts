@@ -288,7 +288,9 @@ export const getCalculatedCompensation = async (compensationFactors: unknown) =>
         return { error: getErrorMessage(error) }
     }
 }
+export const getCalculatedTaxes = async (taxesInput: unknown) => {
 
+}
 
 export const createUserAccount = async (formData: FormData) => {
     try {
