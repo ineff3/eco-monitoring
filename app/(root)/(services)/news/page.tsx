@@ -5,8 +5,10 @@ import { PiFeatherLight } from "react-icons/pi";
 import { Exo } from 'next/font/google'
 import { LuSettings2 } from "react-icons/lu";
 import { Switch } from '@headlessui/react'
-import { useEffect, useState } from 'react'
-import { CircularBtn, CustomButton, CustomCalendar, CustomDropdown, Reveal } from "@/components";
+import { useEffect, useState, Fragment } from 'react'
+import { CircularBtn, CustomButton, CustomCalendar, CustomDropdown, CustomDropdownEnhanced, Reveal } from "@/components";
+import { Listbox, Transition } from '@headlessui/react'
+import { PiMagnifyingGlass } from "react-icons/pi";
 
 const exo = Exo({
     subsets: ['latin'],
@@ -114,8 +116,12 @@ const NewsBlock = () => {
 }
 
 const FilterBar = () => {
+    const [selectedAuthors, setSelectedAuthors] = useState<AuthorType[]>([])
+    const authors = [{ name: 'Aboba', id: 1 }, { name: 'Sugoma', id: 2 }, { name: 'Misungma', id: 3 }, { name: 'Misungma1', id: 4 }, { name: 'Misungma2', id: 5 }, { name: 'Misungma3', id: 6 }, { name: 'Misungma3', id: 7 }, { name: 'Misungma4', id: 8 }];
+
+
     return (
-        <div className=" border border-[#d3d3d3] rounded-[20px] overflow-y-auto max-h-[80vh] bg-white p-6 flex flex-col gap-7">
+        <div className=" border border-[#d3d3d3] rounded-[20px] overflow-y-auto max-h-[80vh]  bg-white p-6 flex flex-col gap-7">
             <div className=' flex items-center justify-between'>
                 <LuSettings2 size={35} />
                 <div className=' relative top-[0.2rem] font-bold text-3xl md:text-3xl tracking-wider'>
@@ -124,7 +130,11 @@ const FilterBar = () => {
             </div>
             <RangeDateFilter />
             <OrderFilter />
-            <AuthorshipFilter />
+            <AuthorshipFilter
+                authors={authors}
+                selectedAuthors={selectedAuthors}
+                setSelectedAuthors={setSelectedAuthors}
+            />
             <div className=" flex justify-between">
                 <CustomButton
                     title='APPLY'
@@ -199,40 +209,86 @@ const RangeDateFilter = () => {
         </div>
     )
 }
+// change for the real author type fetched
+interface AuthorType {
+    id: number
+    name: string
+}
+interface AuthorshipFilterProps {
+    authors: AuthorType[]
+    selectedAuthors: AuthorType[]
+    setSelectedAuthors: (newAuthor: any) => void
+}
+const AuthorshipFilter = ({ authors, selectedAuthors, setSelectedAuthors }: AuthorshipFilterProps) => {
 
-const AuthorshipFilter = () => {
-    const [selectedAuthor, setSelectedAuthor] = useState('Aboba')
-    const authors = ['Aboba', 'Sugoma', 'Misungma'];
     return (
         <div className=" flex flex-col gap-3 items-center justify-center border border-[#d3d3d3] bg-[#f0f0f0] rounded-[10px] p-3">
             <p className=" self-start text-sm">By the authorship</p>
-            <div className=" self-start flex flex-col gap-2">
-                <CustomDropdown
-                    items={authors}
-                    selected={selectedAuthor}
-                    setSelected={setSelectedAuthor}
-                    roundedBg='rounded-[15px]'
-                    paddingY='py-1'
-                />
-                <CustomDropdown
-                    items={authors}
-                    selected={selectedAuthor}
-                    setSelected={setSelectedAuthor}
-                    roundedBg='rounded-[15px]'
-                    paddingY='py-1'
-                />
-                <CustomDropdown
-                    items={authors}
-                    selected={selectedAuthor}
-                    setSelected={setSelectedAuthor}
-                    roundedBg='rounded-[15px]'
-                    paddingY='py-1'
-                />
-            </div>
-            <CircularBtn
-                mode="add"
+            <CustomMultiSelectionDropdown
+                items={authors}
+                selectedItems={selectedAuthors}
+                setSelectedItems={setSelectedAuthors}
+                displayField="name"
+                compareField="id"
             />
-
         </div>
+    )
+}
+
+interface CustomMultiSelectionDropdownProps {
+    items: any[]
+    selectedItems: any[]
+    setSelectedItems: (newItems: any[]) => void
+    displayField: string
+    compareField: string
+
+}
+
+const CustomMultiSelectionDropdown = ({ items, selectedItems, setSelectedItems, displayField, compareField }: CustomMultiSelectionDropdownProps) => {
+    const [inputValue, setInputValue] = useState('')
+    return (
+        <Listbox value={selectedItems} onChange={setSelectedItems} multiple by={compareField}>
+            <Listbox.Button className={` flex relative w-full bg-white border border-[#d3d3d3] px-3 py-2 rounded-[20px] ${selectedItems.length === 0 && ' text-[#7f7f7f]'}`}>
+                {selectedItems.length === 0 ? 'Choose authors' : selectedItems.map((au) => au[displayField]).join(', ')}
+            </Listbox.Button>
+            <Transition
+                enter="transition duration-100 ease-out"
+                enterFrom="transform scale-95 opacity-0"
+                enterTo="transform scale-100 opacity-100"
+                leave="transition duration-75 ease-out"
+                leaveFrom="transform scale-100 opacity-100"
+                leaveTo="transform scale-95 opacity-0"
+            >
+                <Listbox.Options className='   w-[182px] bg-white border border-[#d3d3d3]  rounded-lg overflow-hidden overflow-y-auto max-h-[149px]'>
+                    <div className='  flex items-center px-3 py-2 text-[14px] text-[#7f7f7f] gap-2 border-b'>
+                        <PiMagnifyingGlass size={17} />
+                        <input
+                            type="text"
+                            placeholder='Search'
+                            className=' w-[120px] outline-none placeholder:text-[#7f7f7f]'
+                            onChange={(e) => setInputValue(e.target.value.toLowerCase())}
+                            value={inputValue}
+                        />
+                    </div>
+                    {items.map((item) => (
+                        <Listbox.Option
+                            key={item[compareField]}
+                            value={item}
+                            as={Fragment}
+                        >
+                            {({ active, selected }) => (
+                                <li
+                                    className={` px-3 py-2 text-[14px]
+                                        ${selected ? 'bg-dark bg-opacity-80 text-white hover:bg-opacity-70' : 'hover:bg-gray-100'}
+                                        ${item[displayField].toLowerCase().startsWith(inputValue) ? 'block' : 'hidden'}`}
+                                >
+                                    {item[displayField]}
+                                </li>
+                            )}
+                        </Listbox.Option>
+                    ))}
+                </Listbox.Options>
+            </Transition>
+        </Listbox>
     )
 }
