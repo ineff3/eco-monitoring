@@ -59,7 +59,7 @@ const NonCarcinogenicRiskContent = ({ pollutions, companyNames, passportsWithCom
 
         if (selectedPassportId !== undefined) {
             const filteredPollutionsByPassport = getSubstancesByPassportId(selectedPassportId);
-            setPossibleSubstances(filteredPollutionsByPassport.map(poll => (String(poll.factor_Name))))
+            setPossibleSubstances(filteredPollutionsByPassport.map(poll => (String(poll.name))))
         }
         setSelectedSubstance('')
     }, [selectedPassport])
@@ -69,11 +69,11 @@ const NonCarcinogenicRiskContent = ({ pollutions, companyNames, passportsWithCom
         const selectedPassportId = getSelectedPassportId();
         if (selectedPassportId !== undefined) {
             const filteredPollutionsByPassport = getSubstancesByPassportId(selectedPassportId);
-            const selectedSubstanceByPassport = filteredPollutionsByPassport.find(poll => poll.factor_Name == selectedSubstance)
-            const caValue = selectedSubstanceByPassport?.factor_Ca_value;
-            const selectedRfcFactor = getRfcSubstanceById(Number(selectedSubstanceByPassport?.rfc_factor_id))
-            const rfcValue = selectedRfcFactor?.factor_value
-            setSelectedRFCSubstance(selectedRfcFactor?.factor_Name !== undefined ? selectedRfcFactor?.factor_Name : '')
+            const selectedSubstanceByPassport = filteredPollutionsByPassport.find(poll => poll.name == selectedSubstance)
+            const caValue = selectedSubstanceByPassport?.cA_value;
+            const selectedRfcFactor = getRfcSubstanceById(Number(selectedSubstanceByPassport?.pollutant_id))
+            const rfcValue = selectedRfcFactor?.rfC_value
+            setSelectedRFCSubstance(selectedRfcFactor?.name !== undefined ? selectedRfcFactor?.name : '')
 
             setNonCarcinogenicData({
                 ...nonCarcinogenicData,
@@ -88,7 +88,7 @@ const NonCarcinogenicRiskContent = ({ pollutions, companyNames, passportsWithCom
     //sets rfc to respective value
     useEffect(() => {
         const rfcSelectedSubstance = getRfcSubstanceByName(selectedRFCSubstance);
-        const rfcValue = rfcSelectedSubstance?.factor_value
+        const rfcValue = rfcSelectedSubstance?.rfC_value
         setNonCarcinogenicData({
             ...nonCarcinogenicData,
             rfc: rfcValue !== undefined ? String(rfcValue) : ''
@@ -117,7 +117,7 @@ const NonCarcinogenicRiskContent = ({ pollutions, companyNames, passportsWithCom
         return rfcFactors.find(rfcFactor => rfcFactorId == rfcFactor.id)
     }
     const getRfcSubstanceByName = (rfcFactorName: string) => {
-        return rfcFactors.find(rfcFactor => rfcFactorName == rfcFactor.factor_Name)
+        return rfcFactors.find(rfcFactor => rfcFactorName == rfcFactor.name)
     }
     const handleSchemaIssues = (errors: ZodIssue[]) => {
         let errorMessage = '';

@@ -107,7 +107,7 @@ export const getPollutions = async () => {
     };
 
     try {
-        const response = await fetch(`${link}api/EnvData`, fetchOptions);
+        const response = await fetch(`${link}api/PollutionData`, fetchOptions);
 
         if (!response.ok) {
             throw new Error(`HTTP error! Status: ${response.status}`);
@@ -128,7 +128,7 @@ export const getPollutionsByPassportId = async (id: number) => {
     };
 
     try {
-        const response = await fetch(`${link}api/EnvData/GetEnvFactorsByPassport?passport_id=${id}`, fetchOptions);
+        const response = await fetch(`${link}api/PollutionData/GetPollutionsByPassport?passport_id=${id}`, fetchOptions);
 
         if (!response.ok) {
             throw new Error(`HTTP error! Status: ${response.status}`);
@@ -150,7 +150,7 @@ export const getRfcFactors = async () => {
     };
 
     try {
-        const response = await fetch(`${link}api/RfcData`, fetchOptions);
+        const response = await fetch(`${link}api/PollutantData`, fetchOptions);
 
         if (!response.ok) {
             throw new Error(`HTTP error! Status: ${response.status}`);
@@ -171,7 +171,7 @@ export const getRfcFactorById = async (id: number) => {
     };
 
     try {
-        const response = await fetch(`${link}api/RfcData/id:int?id=${id}`, fetchOptions);
+        const response = await fetch(`${link}api/PollutantData/id:int?id=${id}`, fetchOptions);
 
         if (!response.ok) {
             throw new Error(`HTTP error! Status: ${response.status}`);

@@ -99,10 +99,10 @@ const CompensationContent = ({ companies }: Props) => {
     useEffect(() => {
         const fetchRfcFactorAndSetDeafultFactorValues = async () => {
             if (selectedSubstance !== null) {
-                const result = await getRfcFactorById(Number(selectedSubstance?.rfc_factor_id)) as RfcFactorType
+                const result = await getRfcFactorById(Number(selectedSubstance?.pollutant_id)) as RfcFactorType
                 setCompensationData({
                     ...compensationData,
-                    env_factor: String(selectedSubstance.factor_value),
+                    env_factor: String(selectedSubstance.value),
                     mass_flow_rate: result ? String(result.mass_flow_rate) : '',
                     gdk: result ? String(result.gdK_value) : ''
                 })
@@ -287,7 +287,7 @@ const CompensationContent = ({ companies }: Props) => {
                                     items={possibleSubstances}
                                     selected={selectedSubstance}
                                     setSelected={setSelectedSubstance}
-                                    displayField='factor_Name'
+                                    displayField='name'
 
                                 />
                             </div>

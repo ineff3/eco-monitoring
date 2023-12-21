@@ -74,7 +74,7 @@ const CarcinogenicRiskContent = ({ pollutions, companyNames, passportsWithCompan
 
         if (selectedPassportId !== undefined) {
             const filteredPollutionsByPassport = getSubstancesByPassportId(selectedPassportId);
-            setPossibleSubstances(filteredPollutionsByPassport.map(poll => (String(poll.factor_Name))))
+            setPossibleSubstances(filteredPollutionsByPassport.map(poll => (String(poll.name))))
         }
         setSelectedSubstance('')
     }, [selectedPassport])
@@ -84,10 +84,10 @@ const CarcinogenicRiskContent = ({ pollutions, companyNames, passportsWithCompan
         const selectedPassportId = getSelectedPassportId();
         if (selectedPassportId !== undefined) {
             const filteredPollutionsByPassport = getSubstancesByPassportId(selectedPassportId);
-            const selectedSubstanceByPassport = filteredPollutionsByPassport.find(poll => poll.factor_Name == selectedSubstance)
+            const selectedSubstanceByPassport = filteredPollutionsByPassport.find(poll => poll.name == selectedSubstance)
             console.log(selectedSubstanceByPassport)
-            const caValue = selectedSubstanceByPassport?.factor_Ca_value;
-            const chValue = selectedSubstanceByPassport?.factor_Ch_value;
+            const caValue = selectedSubstanceByPassport?.cA_value;
+            const chValue = selectedSubstanceByPassport?.cH_value;
             setCarcinogenicData({
                 ...carcinogenicData,
                 ca: caValue !== undefined ? String(caValue) : '',

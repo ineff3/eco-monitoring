@@ -9,7 +9,7 @@ const NonCarcinogenicRiskPage = async () => {
     const rfcFactors = await getRfcFactors();
 
     const companyNames = companies.map(company => (company.name));
-    const rfcFactorNames = rfcFactors.map(rfcFactor => (rfcFactor.factor_Name))
+    const rfcFactorNames = rfcFactors.map(rfcFactor => (rfcFactor.name))
 
 
     const passportsWithCompanies = passports.map(passport => ({

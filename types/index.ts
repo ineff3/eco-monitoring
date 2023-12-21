@@ -36,18 +36,18 @@ export interface PassportType {
 
 export interface PollutionType {
     id: number
-    factor_Name: string,
-    factor_value: string,
+    name: string,
+    value: string,
     passport_id: string
-    factor_Ca_value: string
-    factor_Ch_value: string
-    rfc_factor_id: string
+    cA_value: string
+    cH_value: string
+    pollutant_id: string
 }
 
 export interface RfcFactorType {
     id: number,
-    factor_Name: string
-    factor_value: number
+    name: string
+    rfC_value: number
     damaged_organs: string
     sF_value: number
     gdK_value: number
