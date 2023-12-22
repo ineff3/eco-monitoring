@@ -2,7 +2,7 @@
 import fetch from 'node-fetch';
 import https from 'https';
 import { CityType, CustomServerResponse, CustomServerResponseObj, RfcFactorType } from '@/types';
-import { CarcinogenicFactorsSchema, CompensationFactorsSchema, NonCarcinogenicFactorsSchema } from '@/schemas';
+import { CarcinogenicFactorsSchema, CompensationFactorsSchema, NonCarcinogenicFactorsSchema, TaxesInputSchema } from '@/schemas';
 import { formatServerErrors, getErrorMessage } from '../secondary-utils/errorHandling';
 import { getServerSession } from "next-auth/next"
 import { authOptions } from "@/app/api/auth/[...nextauth]/route"
@@ -186,6 +186,28 @@ export const getRfcFactorById = async (id: number) => {
     }
 }
 
+export const getTaxYears = async () => {
+    const fetchOptions = {
+        method: 'GET',
+        agent,
+    };
+
+    try {
+        const response = await fetch(`${link}api/TaxNormData/Years`, fetchOptions);
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        const data = await response.json() as CustomServerResponse;
+
+        return data.result as number[];
+    } catch (error) {
+        console.error('Error:', error);
+        return [];
+    }
+}
+
 export const getCalculatedCarcinogenicRisk = async (carcinogenicFactors: unknown) => {
     // const session = await getServerSession(authOptions)
     // console.log(session)
@@ -289,7 +311,37 @@ export const getCalculatedCompensation = async (compensationFactors: unknown) =>
     }
 }
 export const getCalculatedTaxes = async (taxesInput: unknown) => {
+    try {
+        //server-side validation
+        const result = TaxesInputSchema.safeParse(taxesInput);
+        if (!result.success) {
+            let errorMessage = '';
+            result.error.issues.forEach((err) => {
+                errorMessage += err.path[0] + ': ' + err.message + '. '
+            })
+            throw new Error(errorMessage);
+        }
+        const fetchOptions = {
+            method: 'POST',
+            headers: {
+                'accept': 'text/plain',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(result.data),
+            agent
+        };
+        const response = await fetch(`${link}api/DataAnalysis/Taxes`, fetchOptions)
 
+        if (!response.ok) {
+            const responseBody = await response.json() as CustomServerResponse;
+            throw new Error(formatServerErrors(responseBody.errorMessages));
+        }
+        const data = await response.json() as CustomServerResponse;
+        return data.result;
+    }
+    catch (error) {
+        return { error: getErrorMessage(error) }
+    }
 }
 
 export const createUserAccount = async (formData: FormData) => {

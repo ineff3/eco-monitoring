@@ -4,8 +4,8 @@ import Image from 'next/image'
 import { Exo } from 'next/font/google'
 import { CustomButton, CustomDropdown, CustomDropdownEnhanced, ErrorToast, FactorBlock, SuccessfulToast } from '@/components';
 import { CompanyType, PassportType } from '@/types';
-import { getPassportsByCompanyId } from '@/actions/basic-actions/actions';
-import { CompensationFactorsSchema } from '@/schemas';
+import { getCalculatedTaxes, getPassportsByCompanyId } from '@/actions/basic-actions/actions';
+import { CompensationFactorsSchema, TaxesInputSchema } from '@/schemas';
 import { ZodIssue } from 'zod';
 import { toast } from 'react-hot-toast';
 import EmissionBarchart from './EmissionBarchart';
@@ -15,37 +15,19 @@ const exo = Exo({
     variable: '--font-exo',
     display: 'swap'
 })
-// interface EmissionType {
-//     at: string,
-//     wt: string,
-//     wdt: string,
-//     rat: string
-//     trat: string
-// }
+
 interface Props {
     companies: CompanyType[]
+    taxYears: string[]
 }
 
-const EmissionTaxesContent = ({ companies }: Props) => {
-    // const [emissionData, setEmissionData] = useState<EmissionType>({
-    //     at: '',
-    //     wt: '',
-    //     wdt: '',
-    //     rat: '',
-    //     trat: ''
-    // })
-    const [resultTaxes, setResultTaxes] = useState({
-        air: '',
-        water: '',
-        disposalWastes: '',
-        tadioactive: '',
-        tempRadioactive: ''
-    })
+const EmissionTaxesContent = ({ companies, taxYears }: Props) => {
+    const [resultTaxes, setResultTaxes] = useState<number[]>([])
     const [selectedCompany, setSelectedCompany] = useState<CompanyType | null>(null);
     const [selectedPassport, setSelectedPassport] = useState<PassportType | null>(null);
     const [selectedTaxYear, setSelectedTaxYear] = useState('')
     const [possiblePassports, setPossiblePassports] = useState([])
-    const [possibleTaxYears, setPossibleTaxYears] = useState([])
+
 
     //cleares the selectedPassport and possibleSubstances and fetches possiblePassports when company changes
     useEffect(() => {
@@ -60,35 +42,6 @@ const EmissionTaxesContent = ({ companies }: Props) => {
         fetchAndSetPossiblePassports();
     }, [selectedCompany])
 
-    //cleares selectedSubstance and fetches possibleSubstances when passport changes
-    useEffect(() => {
-        // const fetchAndSetPossibleSubstances = async () => {
-        //     if (selectedPassport !== null) {
-        //         const result = await getPollutionsByPassportId(selectedPassport?.id) as any
-        //         setPossibleSubstances(result)
-        //     }
-        // }
-        // fetchAndSetPossibleSubstances();
-    }, [selectedPassport])
-
-
-    // const handleEmissionFactorsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    //     setEmissionData({
-    //         ...emissionData,
-    //         [e.target.name]: e.target.value
-    //     })
-
-    // }
-    const positiveNumberValidation = (inputData: string) => {
-        const numericValue = Number(inputData);
-        return !isNaN(numericValue) && numericValue > 0;
-    }
-    const positiveNumberWithUpperLimitValidation = (upperLimit: number) => {
-        return (inputData: string) => {
-            const numericValue = Number(inputData);
-            return !isNaN(numericValue) && numericValue > 0 && numericValue <= upperLimit;
-        };
-    };
     const handleSchemaIssues = (errors: ZodIssue[]) => {
         let errorMessage = '';
         errors.forEach((err) => {
@@ -99,76 +52,34 @@ const EmissionTaxesContent = ({ companies }: Props) => {
     const resetAllSelectedFields = () => {
         setSelectedCompany(null)
         setPossiblePassports([])
-        setPossibleTaxYears([])
-        // setEmissionData({
-        //     at: '',
-        //     wt: '',
-        //     wdt: '',
-        //     rat: '',
-        //     trat: ''
-        // })
+        setSelectedTaxYear('')
+    }
+    const clientGetCalculatedTaxes = async () => {
+        //client-side validation
+        const result = TaxesInputSchema.safeParse({
+            company_id: selectedCompany?.id,
+            passport_id: selectedPassport?.id,
+            year: Number(selectedTaxYear)
+        });
+        if (!result.success) {
+            handleSchemaIssues(result.error.issues)
+            return;
+        }
+
+        //server response + error handling
+        const response = await getCalculatedTaxes(result.data);
+        if (response && typeof response === 'object' && 'error' in response) {
+            toast.custom((t) => <ErrorToast t={t} message={response.error} />);
+        } else {
+            console.log(response)
+            setResultTaxes(response)
+            toast.custom((t) => <SuccessfulToast t={t} message='Emission taxes successfuly calculated' />, { duration: 1000 });
+        }
     }
     return (
         <div className={`w-full flex flex-col gap-6 py-5 sm:py-12 px-4 sm:px-10`}>
-            <form>
+            <form action={clientGetCalculatedTaxes}>
                 <div className=' grid grid-rows-[repeat(auto-fill,minmax(210px,1fr))] grid-cols-[repeat(auto-fit,minmax(200px,1fr))]  gap-5'>
-                    <>
-                        {/* <FactorBlock
-                            pathToIcon='/factor-icons/salary.png'
-                            altText='money'
-                            tagName='AT'
-                            desc='Tax rate for emissions into the atmosphere'
-                            quantity='UAH'
-                            name='at'
-                            handleChange={handleEmissionFactorsChange}
-                            value={emissionData.at}
-                            validation={positiveNumberValidation}
-                        />
-                        <FactorBlock
-                            pathToIcon='/factor-icons/salary.png'
-                            altText='money'
-                            tagName='WT'
-                            desc='Tax rate for emissions into the atmosphere'
-                            quantity='UAH'
-                            name='wt'
-                            handleChange={handleEmissionFactorsChange}
-                            value={emissionData.wt}
-                            validation={positiveNumberValidation}
-                        />
-                        <FactorBlock
-                            pathToIcon='/factor-icons/salary.png'
-                            altText='money'
-                            tagName='WDT'
-                            desc='Tax rate for waste storage'
-                            quantity='UAH'
-                            name='wdt'
-                            handleChange={handleEmissionFactorsChange}
-                            value={emissionData.wdt}
-                            validation={positiveNumberValidation}
-                        />
-                        <FactorBlock
-                            pathToIcon='/factor-icons/salary.png'
-                            altText='money'
-                            tagName='RaT'
-                            desc='Tax rate for radioactive substances emissions'
-                            quantity='UAH'
-                            name='rat'
-                            handleChange={handleEmissionFactorsChange}
-                            value={emissionData.rat}
-                            validation={positiveNumberValidation}
-                        />
-                        <FactorBlock
-                            pathToIcon='/factor-icons/salary.png'
-                            altText='money'
-                            tagName='TRaT'
-                            desc='Tax rate for temporary disposal of radioactive substances'
-                            quantity='UAH'
-                            name='trat'
-                            handleChange={handleEmissionFactorsChange}
-                            value={emissionData.trat}
-                            validation={positiveNumberValidation}
-                        /> */}
-                    </>
 
                     <div className=' flex flex-col gap-8 min-h-[390px] bg-white border border-[#d3d3d3] rounded-[20px] p-6 row-span-2 col-span-full xl:col-span-2'>
                         <div className=' flex items-center justify-center sm:justify-between'>
@@ -209,10 +120,10 @@ const EmissionTaxesContent = ({ companies }: Props) => {
                             </div>
                             <div className=' flex flex-col sm:flex-row items-center w-full justify-between '>
                                 <p className=' max-w-[83px] sm:text-base md:text-sm'>
-                                    Substance
+                                    Taxes
                                 </p>
                                 <CustomDropdown
-                                    items={possibleTaxYears}
+                                    items={taxYears}
                                     selected={selectedTaxYear}
                                     setSelected={setSelectedTaxYear}
 
@@ -243,23 +154,23 @@ const EmissionTaxesContent = ({ companies }: Props) => {
                             </div>
                             <div className={` h-[290px] `}>
                                 <EmissionBarchart
-                                    dataValues={[8500, 5200, 7100, 9100, 5000]}
+                                    dataValues={resultTaxes}
                                 />
                             </div>
-                            <div className=' flex flex-col gap-8 flex-auto'>
-                                {/* <div className=' flex flex-col gap-2'>
-                                    <p className=' text-sm'>Amounts of compensation required to be paid</p>
+                            <div className=' flex justify-between flex-auto'>
+                                <div className=' flex flex-col gap-2'>
+                                    <p className=' text-sm'>Sum of all taxes per substance</p>
                                     <div className=' flex flex-wrap gap-2 items-center'>
-                                        <p className={`text-xl font-light break-words ${exo.className}`}>{results.compensation}</p>
-                                        <div className={` text-[#7f7f7f] ${results.compensation ? 'block' : 'hidden'}`}>UAH</div>
+                                        <p className={`text-xl font-light break-words ${exo.className}`}>
+                                            {resultTaxes.reduce((acc, tax) => acc + tax, 0).toFixed(2)}
+                                        </p>
+                                        <div className={` relative top-[0.1rem] text-[#7f7f7f] ${resultTaxes ? 'block' : 'hidden'}`}>UAH</div>
                                     </div>
-                                </div> */}
-                                <div className=' flex flex-auto items-end self-end'>
-                                    <CustomButton
-                                        title='CALCULATE'
-                                        type='submit'
-                                    />
                                 </div>
+                                <CustomButton
+                                    title='CALCULATE'
+                                    type='submit'
+                                />
 
                             </div>
                         </div>

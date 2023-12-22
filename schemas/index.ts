@@ -46,3 +46,9 @@ export const CompensationFactorsSchema = z.object({
     time_hours: DefaultTimeFactorSchema('Time', 8760),
     gdk: DefaultFactorSchema('Mpe')
 })
+
+export const TaxesInputSchema = z.object({
+    company_id: z.number().int().positive(),
+    passport_id: z.number().int().positive(),
+    year: z.number().min(2000).max(2030)
+})
