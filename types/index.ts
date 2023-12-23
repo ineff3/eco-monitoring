@@ -111,4 +111,5 @@ export interface SearchParamsProps {
     companies: string,
     fromDate: string,
     toDate: string
+    regions: string
 }

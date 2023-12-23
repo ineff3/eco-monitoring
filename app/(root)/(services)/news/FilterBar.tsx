@@ -7,7 +7,7 @@ import { CustomButton, CustomCalendar } from "@/components";
 import { Listbox, Transition } from '@headlessui/react'
 import { PiMagnifyingGlass } from "react-icons/pi";
 import { CompanyType, SearchParamsProps } from "@/types";
-import { getCompanies, getNarrowCompanies, getNarrowUsers } from "@/actions/basic-actions/actions";
+import { getCompanies, getNarrowCompanies, getNarrowRegions, getNarrowUsers } from "@/actions/basic-actions/actions";
 import { parse, addDays, subDays } from 'date-fns'
 import { useRouter } from 'next/navigation'
 import format from 'date-fns/format'
@@ -27,6 +27,10 @@ interface NarrowAuthorType {
     id: string
     userName: string
 }
+interface NarrowRegionType {
+    id: number
+    name: string
+}
 
 
 const FilterBar = ({
@@ -37,6 +41,7 @@ const FilterBar = ({
     const router = useRouter()
     const [selectedAuthors, setSelectedAuthors] = useState<NarrowAuthorType[]>([])
     const [selectedCompanies, setSelectedCompanies] = useState<NarrowCompanyType[]>([]);
+    const [selectedRegions, setSelectedRegions] = useState<NarrowRegionType[]>([]);
     const [range, setRange] = useState([
         {
             startDate: searchParams.fromDate ? parse(searchParams.fromDate, 'yyyy-MM-dd', new Date()) : subDays(new Date(), 7),
@@ -49,8 +54,10 @@ const FilterBar = ({
     );
     const [authors, setAuthors] = useState<NarrowAuthorType[]>([])
     const [companies, setComapnies] = useState<NarrowCompanyType[]>([])
+    const [regions, setRegions] = useState<NarrowRegionType[]>([])
     const [loadingAuthors, setLoadingAuthors] = useState(true);
     const [loadingCompanies, setLoadingCompanies] = useState(true);
+    const [loadingRegions, setLoadingRegions] = useState(true);
 
     //initially fetches companies and authors
     useEffect(() => {
@@ -64,8 +71,14 @@ const FilterBar = ({
             setComapnies(result)
             setLoadingCompanies(false);
         }
+        const fetchAndSetRegions = async () => {
+            const result = await getNarrowRegions()
+            setRegions(result)
+            setLoadingRegions(false)
+        }
         fetchAndSetAuthors()
         fetchAndSetCompanies()
+        fetchAndSetRegions()
     }, [])
 
     // waits until authors being fetched from the server and sets selected authors
@@ -86,6 +99,15 @@ const FilterBar = ({
         }
     }, [loadingCompanies]);
 
+    // waits until regions being fetched from the server and sets selected regions
+    useEffect(() => {
+        if (!loadingRegions && searchParams?.regions) {
+            const selectedRegionsIds = searchParams.regions.split(',').map(Number);
+            const selectedRegionsFromParams = regions.filter(region => selectedRegionsIds.includes(region.id));
+            setSelectedRegions(selectedRegionsFromParams);
+        }
+    }, [loadingRegions]);
+
 
 
 
@@ -97,6 +119,7 @@ const FilterBar = ({
             order: selectedOption,
             authors: selectedAuthors.map(author => author.id).join(','),
             companies: selectedCompanies.map(company => company.id).join(','),
+            regions: selectedRegions.map(region => region.id).join(','),
             fromDate: formattedStartDate,
             toDate: formattedEndDate,
         };
@@ -110,6 +133,7 @@ const FilterBar = ({
         setSelectedOption('Newer to older');
         setSelectedAuthors([]);
         setSelectedCompanies([]);
+        setSelectedRegions([]);
         setRange([
             {
                 startDate: subDays(new Date(), 7),
@@ -146,6 +170,11 @@ const FilterBar = ({
                 selectedCompanies={selectedCompanies}
                 setSelectedCompoanies={setSelectedCompanies}
                 companies={companies}
+            />
+            <RegionMentionedFilter
+                selectedRegions={selectedRegions}
+                setSelectedRegions={setSelectedRegions}
+                regions={regions}
             />
             <div className=" flex justify-between">
                 <CustomButton
@@ -235,6 +264,7 @@ const AuthorshipFilter = ({ selectedAuthors, setSelectedAuthors, authors }: Auth
         <div className=" flex flex-col gap-3 items-center justify-center border border-[#d3d3d3] bg-[#f0f0f0] rounded-[10px] p-3">
             <p className=" self-start text-sm">By the authorship</p>
             <CustomMultiSelectionDropdown
+                title='Choose authors'
                 items={authors}
                 selectedItems={selectedAuthors}
                 setSelectedItems={setSelectedAuthors}
@@ -256,9 +286,32 @@ const CompanyMentionedFilter = ({ selectedCompanies, setSelectedCompoanies, comp
         <div className=" flex flex-col gap-3 items-center justify-center border border-[#d3d3d3] bg-[#f0f0f0] rounded-[10px] p-3">
             <p className=" self-start text-sm">Company mentioned</p>
             <CustomMultiSelectionDropdown
+                title='Choose companies'
                 items={companies}
                 selectedItems={selectedCompanies}
                 setSelectedItems={setSelectedCompoanies}
+                displayField="name"
+                compareField="id"
+            />
+        </div>
+    )
+}
+
+interface RegionMentionedFilterProps {
+    selectedRegions: NarrowRegionType[]
+    setSelectedRegions: (newAuthor: any) => void
+    regions: NarrowRegionType[]
+}
+const RegionMentionedFilter = ({ regions, selectedRegions, setSelectedRegions }: RegionMentionedFilterProps) => {
+
+    return (
+        <div className=" flex flex-col gap-3 items-center justify-center border border-[#d3d3d3] bg-[#f0f0f0] rounded-[10px] p-3">
+            <p className=" self-start text-sm">Regions mentioned</p>
+            <CustomMultiSelectionDropdown
+                title='Choose regions'
+                items={regions}
+                selectedItems={selectedRegions}
+                setSelectedItems={setSelectedRegions}
                 displayField="name"
                 compareField="id"
             />
@@ -272,14 +325,15 @@ interface CustomMultiSelectionDropdownProps {
     setSelectedItems: (newItems: any[]) => void
     displayField: string
     compareField: string
+    title: string
 
 }
-const CustomMultiSelectionDropdown = ({ items, selectedItems, setSelectedItems, displayField, compareField }: CustomMultiSelectionDropdownProps) => {
+const CustomMultiSelectionDropdown = ({ title, items, selectedItems, setSelectedItems, displayField, compareField }: CustomMultiSelectionDropdownProps) => {
     const [inputValue, setInputValue] = useState('')
     return (
         <Listbox value={selectedItems} onChange={setSelectedItems} multiple by={compareField}>
             <Listbox.Button className={` flex relative w-full bg-white border border-[#d3d3d3] px-3 py-2 rounded-[20px] ${selectedItems.length === 0 && ' text-[#7f7f7f]'}`}>
-                {selectedItems.length === 0 ? 'Choose authors' : selectedItems.map((au) => au[displayField]).join(', ')}
+                {selectedItems.length === 0 ? title : selectedItems.map((au) => au[displayField]).join(', ')}
             </Listbox.Button>
             <Transition
                 enter="transition duration-100 ease-out"

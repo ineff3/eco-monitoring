@@ -265,6 +265,14 @@ export const getFilteredNews = async (page?: number, filters?: SearchParamsProps
                     const separatedAuthors = authors.map((id: any) => `author_ids=${id}`).join('&');
                     return separatedAuthors
                 }
+                else if (key === 'regions') {
+                    const regions = value.split(',')
+                    if (regions?.length === 1 && regions.includes('')) {
+                        return null
+                    }
+                    const separatedRegions = regions.map((id: any) => `region_ids=${id}`).join('&');
+                    return separatedRegions
+                }
                 return `${key}=${value}`
             })
             .filter(Boolean)
@@ -473,6 +481,28 @@ export const getNarrowUsers = async () => {
 
     try {
         const response = await fetch(`${link}api/UserData/GetAllNarrowUsers`, fetchOptions);
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        const data = await response.json() as CustomServerResponse;
+
+        return data.result;
+    } catch (error) {
+        console.error('Error:', error);
+        return [];
+    }
+}
+
+export const getNarrowRegions = async () => {
+    const fetchOptions = {
+        method: 'GET',
+        agent,
+    };
+
+    try {
+        const response = await fetch(`${link}api/RegionData/GetAllNarrowRegions`, fetchOptions);
 
         if (!response.ok) {
             throw new Error(`HTTP error! Status: ${response.status}`);
