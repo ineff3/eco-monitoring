@@ -48,7 +48,7 @@ const Services = () => {
 
                         <div className=" flex gap-10 font-bold text-lg ml-12">
 
-                            <div className={blockStyles}>
+                            <Link className={blockStyles} href={'/news?order=Newer%20to%20older'}>
                                 <Image
                                     src="/services-icons/news-icon.png"
                                     alt="News"
@@ -58,7 +58,7 @@ const Services = () => {
                                     quality={100}
                                 />
                                 <div className=' uppercase'>News</div>
-                            </div>
+                            </Link>
 
                             <div className={contrastBlockStyles}>
                                 <Image
@@ -106,7 +106,7 @@ const Services = () => {
 
                         <div className=" flex justify-center flex-wrap gap-10 font-bold text-lg">
 
-                            <div className={blockStyles}>
+                            <Link href={'/news?order=Newer%20to%20older'} className={blockStyles}>
                                 <Image
                                     src="/services-icons/news-icon.png"
                                     alt="News"
@@ -114,7 +114,7 @@ const Services = () => {
                                     height={100}
                                 />
                                 <div className=' uppercase'>News</div>
-                            </div>
+                            </Link>
 
                             <div className={contrastBlockStyles}>
                                 <Image

@@ -86,7 +86,7 @@ const DateRangeComp = ({ range, setRange }: Props) => {
                         months={1}
                         rangeColors={['#67c9a5']}
                         direction="vertical"
-                        className="fixed z-50 left-[57%]"
+                        className="fixed z-50 left-[65%]"
                     />
                 }
             </div>

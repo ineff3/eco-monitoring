@@ -200,8 +200,8 @@ const NavLinks = () => {
             </nav>
             <div className={`lg:hidden border border-b-black border-opacity-40  w-full ${pathname !== '/news' ? ' block' : ' hidden'} `}></div>
 
-            <nav className={` w-full lg:w-auto ${pathname !== '/passports' ? ' block' : ' hidden'}`} >
-                <Link className={pathname === '/passports' ? activeLinkStyles : inactiveLinkStyles + inactiveHoverStyles} href={'/'}>
+            <nav className={` w-full lg:w-auto ${pathname !== '/ecological-passports' ? ' block' : ' hidden'}`} >
+                <Link className={pathname === '/ecological-passports' ? activeLinkStyles : inactiveLinkStyles + inactiveHoverStyles} href={'/ecological-passports'}>
                     <Image
                         src='/header-icons/eco-passports.png'
                         alt='Eco passports'
@@ -213,7 +213,7 @@ const NavLinks = () => {
                     <RiArrowDownSLine size={25} className=' relative top-[0.1rem] lg:hidden -rotate-90' />
                 </Link>
             </nav>
-            <div className={`lg:hidden border border-b-black border-opacity-40  w-full ${pathname !== '/passports' ? ' block' : ' hidden'} `}></div>
+            <div className={`lg:hidden border border-b-black border-opacity-40  w-full ${pathname !== '/ecological-passports' ? ' block' : ' hidden'} `}></div>
 
             <nav className={` w-full lg:w-auto ${pathname === '/carcinogenic-risk' || pathname === '/non-carcinogenic-risk' || pathname === '/compensation' || pathname === '/emission-taxes' ? ' hidden' : ' block'}`} >
                 <Link className={pathname === '/info' ? activeLinkStyles : inactiveLinkStyles + inactiveHoverStyles} href={'/carcinogenic-risk'}>
