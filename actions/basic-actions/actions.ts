@@ -56,6 +56,27 @@ export const getCityByCompanyId = async (id: number) => {
         return null;
     }
 }
+export const getNarrowCompanies = async () => {
+    const fetchOptions = {
+        method: 'GET',
+        agent,
+    };
+
+    try {
+        const response = await fetch(`${link}api/CompanyData/GetAllNarrowCompanies`, fetchOptions);
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        const data = await response.json() as CustomServerResponse;
+
+        return data.result;
+    } catch (error) {
+        console.error('Error:', error);
+        return [];
+    }
+}
 
 export const getPassports = async () => {
     const fetchOptions = {
@@ -209,6 +230,48 @@ export const getTaxYears = async () => {
 }
 
 export const getFilteredNews = async (page?: number, filters?: SearchParamsProps) => {
+    console.log(filters)
+    let queryString = ''
+    if (filters) {
+        queryString = Object.entries(filters)
+            .map(([key, value]) => {
+                if (key === 'order') {
+                    if (value === 'By relevance') {
+                        key = 'byRelevance'
+                        value = true
+                    }
+                    else if (value === 'Newer to older') {
+                        key = 'newerToOlder'
+                        value = true
+                    }
+                    else if (value === 'Older to newer') {
+                        key = 'newerToOlder'
+                        value = false
+                    }
+                }
+                else if (key === 'companies') {
+                    const companies = value.split(',')
+                    if (companies?.length === 1 && companies.includes('')) {
+                        return null
+                    }
+                    const separatadCompanies = companies.map((id: any) => `company_ids=${id}`).join('&');
+                    return separatadCompanies
+                }
+                else if (key === 'authors') {
+                    const authors = value.split(',')
+                    if (authors?.length === 1 && authors.includes('')) {
+                        return null
+                    }
+                    const separatedAuthors = authors.map((id: any) => `author_ids=${id}`).join('&');
+                    return separatedAuthors
+                }
+                return `${key}=${value}`
+            })
+            .filter(Boolean)
+            .join('&');
+    }
+    console.log(queryString)
+
     const curPage = page ? page : '';
     const fetchOptions = {
         method: 'GET',
@@ -216,13 +279,15 @@ export const getFilteredNews = async (page?: number, filters?: SearchParamsProps
     };
 
     try {
-        const response = await fetch(`${link}api/News/GetNewsByFilter?count=2&page=${curPage}`, fetchOptions);
+        // console.log(`GetNewsByFilter?count=2&page=${curPage}&${queryString}`)
+        const response = await fetch(`${link}api/News/GetNewsByFilter?count=2&page=${curPage}&${queryString}`, fetchOptions);
 
         if (!response.ok) {
             throw new Error(`HTTP error! Status: ${response.status}`);
         }
 
         const data = await response.json() as CustomServerFilteredNewsResponse;
+        // console.log(data)
 
         return data.result;
     } catch (error) {
@@ -399,4 +464,25 @@ export const createUserAccount = async (formData: FormData) => {
         return { error: getErrorMessage(error) }
     }
     redirect('/');
+}
+export const getNarrowUsers = async () => {
+    const fetchOptions = {
+        method: 'GET',
+        agent,
+    };
+
+    try {
+        const response = await fetch(`${link}api/UserData/GetAllNarrowUsers`, fetchOptions);
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        const data = await response.json() as CustomServerResponse;
+
+        return data.result;
+    } catch (error) {
+        console.error('Error:', error);
+        return [];
+    }
 }

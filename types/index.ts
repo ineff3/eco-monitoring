@@ -109,6 +109,6 @@ export interface SearchParamsProps {
     order: string,
     authors: string,
     companies: string,
-    startDate: string,
-    endDate: string
+    fromDate: string,
+    toDate: string
 }

@@ -7,7 +7,7 @@ import { CustomButton, CustomCalendar } from "@/components";
 import { Listbox, Transition } from '@headlessui/react'
 import { PiMagnifyingGlass } from "react-icons/pi";
 import { CompanyType, SearchParamsProps } from "@/types";
-import { getCompanies } from "@/actions/basic-actions/actions";
+import { getCompanies, getNarrowCompanies, getNarrowUsers } from "@/actions/basic-actions/actions";
 import { parse, addDays, subDays } from 'date-fns'
 import { useRouter } from 'next/navigation'
 import format from 'date-fns/format'
@@ -19,6 +19,15 @@ const exo = Exo({
 })
 const orderOptions = ['Newer to older', 'Older to newer', 'By relevance'];
 
+interface NarrowCompanyType {
+    id: number
+    name: string
+}
+interface NarrowAuthorType {
+    id: string
+    userName: string
+}
+
 
 const FilterBar = ({
     searchParams
@@ -26,16 +35,58 @@ const FilterBar = ({
     searchParams: SearchParamsProps
 }) => {
     const router = useRouter()
-    const [selectedAuthors, setSelectedAuthors] = useState<AuthorType[]>([])
-    const [selectedCompanies, setSelectedCompanies] = useState<CompanyType[]>([]);
+    const [selectedAuthors, setSelectedAuthors] = useState<NarrowAuthorType[]>([])
+    const [selectedCompanies, setSelectedCompanies] = useState<NarrowCompanyType[]>([]);
     const [range, setRange] = useState([
         {
-            startDate: searchParams.startDate ? parse(searchParams.startDate, 'yyyy-MM-dd', new Date()) : subDays(new Date(), 7),
-            endDate: searchParams.endDate ? parse(searchParams.endDate, 'yyyy-MM-dd', new Date()) : new Date(),
+            startDate: searchParams.fromDate ? parse(searchParams.fromDate, 'yyyy-MM-dd', new Date()) : subDays(new Date(), 7),
+            endDate: searchParams.toDate ? parse(searchParams.toDate, 'yyyy-MM-dd', new Date()) : new Date(),
             key: 'selection',
         },
     ]);
-    const [selectedOption, setSelectedOption] = useState<string>(searchParams.order && orderOptions.includes(searchParams.order) ? searchParams.order : 'Newer to older');
+    const [selectedOption, setSelectedOption] = useState<string>(
+        searchParams.order && orderOptions.includes(searchParams.order) ? searchParams.order : 'Newer to older'
+    );
+    const [authors, setAuthors] = useState<NarrowAuthorType[]>([])
+    const [companies, setComapnies] = useState<NarrowCompanyType[]>([])
+    const [loadingAuthors, setLoadingAuthors] = useState(true);
+    const [loadingCompanies, setLoadingCompanies] = useState(true);
+
+    //initially fetches companies and authors
+    useEffect(() => {
+        const fetchAndSetAuthors = async () => {
+            const result = await getNarrowUsers();
+            setAuthors(result)
+            setLoadingAuthors(false);
+        }
+        const fetchAndSetCompanies = async () => {
+            const result = await getNarrowCompanies();
+            setComapnies(result)
+            setLoadingCompanies(false);
+        }
+        fetchAndSetAuthors()
+        fetchAndSetCompanies()
+    }, [])
+
+    // waits until authors being fetched from the server and sets selected authors
+    useEffect(() => {
+        if (!loadingAuthors && searchParams?.authors) {
+            const selectedAuthorIds = searchParams.authors.split(',').map(id => id.trim());
+            const selectedAuthorsFromParams = authors.filter(author => selectedAuthorIds.includes(author.id));
+            setSelectedAuthors(selectedAuthorsFromParams);
+        }
+    }, [loadingAuthors]);
+
+    // waits until companies being fetched from the server and sets selected companies
+    useEffect(() => {
+        if (!loadingCompanies && searchParams?.companies) {
+            const selectedCompaniesIds = searchParams.companies.split(',').map(Number);
+            const selectedCompaniesFromParams = companies.filter(company => selectedCompaniesIds.includes(company.id));
+            setSelectedCompanies(selectedCompaniesFromParams);
+        }
+    }, [loadingCompanies]);
+
+
 
 
     const addFilters = () => {
@@ -46,8 +97,8 @@ const FilterBar = ({
             order: selectedOption,
             authors: selectedAuthors.map(author => author.id).join(','),
             companies: selectedCompanies.map(company => company.id).join(','),
-            startDate: formattedStartDate,
-            endDate: formattedEndDate,
+            fromDate: formattedStartDate,
+            toDate: formattedEndDate,
         };
         const queryString = Object.entries(queryParams)
             .map(([key, value]) => `${key}=${encodeURIComponent(value)}`)
@@ -56,13 +107,13 @@ const FilterBar = ({
         router.push(`/news?${queryString}`);
     }
     const resetFilters = () => {
-        setSelectedOption('By relevance');
+        setSelectedOption('Newer to older');
         setSelectedAuthors([]);
         setSelectedCompanies([]);
         setRange([
             {
-                startDate: new Date(),
-                endDate: addDays(new Date(), 7),
+                startDate: subDays(new Date(), 7),
+                endDate: new Date(),
                 key: 'selection',
             },
         ]);
@@ -89,10 +140,12 @@ const FilterBar = ({
             <AuthorshipFilter
                 selectedAuthors={selectedAuthors}
                 setSelectedAuthors={setSelectedAuthors}
+                authors={authors}
             />
             <CompanyMentionedFilter
                 selectedCompanies={selectedCompanies}
                 setSelectedCompoanies={setSelectedCompanies}
+                companies={companies}
             />
             <div className=" flex justify-between">
                 <CustomButton
@@ -171,17 +224,13 @@ const CustomSwitch = ({ switchValue, selectedOption, setSelectedOption }: Custom
     )
 }
 
-// change for the real author type fetched
-interface AuthorType {
-    id: number
-    name: string
-}
 interface AuthorshipFilterProps {
-    selectedAuthors: AuthorType[]
+    selectedAuthors: NarrowAuthorType[]
     setSelectedAuthors: (newAuthor: any) => void
+    authors: NarrowAuthorType[]
 }
-const AuthorshipFilter = ({ selectedAuthors, setSelectedAuthors }: AuthorshipFilterProps) => {
-    const authors = [{ name: 'Aboba', id: 1 }, { name: 'Sugoma', id: 2 }, { name: 'Misungma', id: 3 }, { name: 'Misungma1', id: 4 }, { name: 'Misungma2', id: 5 }, { name: 'Misungma3', id: 6 }, { name: 'Misungma3', id: 7 }, { name: 'Misungma4', id: 8 }];
+const AuthorshipFilter = ({ selectedAuthors, setSelectedAuthors, authors }: AuthorshipFilterProps) => {
+
     return (
         <div className=" flex flex-col gap-3 items-center justify-center border border-[#d3d3d3] bg-[#f0f0f0] rounded-[10px] p-3">
             <p className=" self-start text-sm">By the authorship</p>
@@ -189,7 +238,7 @@ const AuthorshipFilter = ({ selectedAuthors, setSelectedAuthors }: AuthorshipFil
                 items={authors}
                 selectedItems={selectedAuthors}
                 setSelectedItems={setSelectedAuthors}
-                displayField="name"
+                displayField="userName"
                 compareField="id"
             />
         </div>
@@ -197,18 +246,12 @@ const AuthorshipFilter = ({ selectedAuthors, setSelectedAuthors }: AuthorshipFil
 }
 
 interface CompanyMentionedFilterProps {
-    selectedCompanies: CompanyType[]
+    selectedCompanies: NarrowCompanyType[]
     setSelectedCompoanies: (newAuthor: any) => void
+    companies: NarrowCompanyType[]
 }
-const CompanyMentionedFilter = ({ selectedCompanies, setSelectedCompoanies }: CompanyMentionedFilterProps) => {
-    const [companies, setComapnies] = useState<CompanyType[]>([])
-    useEffect(() => {
-        const fetchAndSetCompanies = async () => {
-            const result = await getCompanies();
-            setComapnies(result)
-        }
-        fetchAndSetCompanies()
-    }, [])
+const CompanyMentionedFilter = ({ selectedCompanies, setSelectedCompoanies, companies }: CompanyMentionedFilterProps) => {
+
     return (
         <div className=" flex flex-col gap-3 items-center justify-center border border-[#d3d3d3] bg-[#f0f0f0] rounded-[10px] p-3">
             <p className=" self-start text-sm">Company mentioned</p>
@@ -231,7 +274,6 @@ interface CustomMultiSelectionDropdownProps {
     compareField: string
 
 }
-
 const CustomMultiSelectionDropdown = ({ items, selectedItems, setSelectedItems, displayField, compareField }: CustomMultiSelectionDropdownProps) => {
     const [inputValue, setInputValue] = useState('')
     return (

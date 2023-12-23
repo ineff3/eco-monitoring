@@ -4,11 +4,12 @@ import { BsBuildings } from "react-icons/bs";
 import { PiFeatherLight } from "react-icons/pi";
 import { Exo } from 'next/font/google'
 import { Reveal } from "@/components";
-import { NewsType } from "@/types";
+import { NewsType, SearchParamsProps } from "@/types";
 import { useEffect, useState } from "react";
 import { format, parseISO } from 'date-fns';
 import { getFilteredNews } from "@/actions/basic-actions/actions";
 import { useInView } from "react-intersection-observer";
+import Image from 'next/image'
 
 const exo = Exo({
     subsets: ['latin'],
@@ -18,20 +19,21 @@ const exo = Exo({
 
 const InfiniteScrollNews = ({
     initialNews,
-    initialIsEnd
+    initialIsEnd,
+    searchParams
 }: {
     initialNews: NewsType[]
     initialIsEnd: boolean
+    searchParams: SearchParamsProps
 }) => {
     const [news, setNews] = useState(initialNews)
     const [page, setPage] = useState(0)
     const [ref, inView] = useInView()
     const [isEnd, setIsEnd] = useState(initialIsEnd)
 
-
     const loadMoreNews = async () => {
         const nextPage = page + 1;
-        const response = (await getFilteredNews(nextPage))
+        const response = (await getFilteredNews(nextPage, searchParams))
         const fetchedNews = response.selectedNews;
         if (response.isItEnd) {
             setIsEnd(true)
@@ -55,6 +57,27 @@ const InfiniteScrollNews = ({
     return (
         <div className=" flex flex-col gap-10 ">
             <div className=" flex flex-col gap-[120px]">
+                <div className={`${initialNews?.length ? 'hidden' : 'block'}`}>
+                    <Reveal width="100%">
+                        <div className={`border border-[#d3d3d3] bg-white rounded-[20px] p-6 min-h-[230px] flex flex-col gap-10 items-center`}>
+                            <div className=" flex w-full justify-between items-center">
+                                <Image
+                                    src='/no-results.png'
+                                    alt='not-results'
+                                    width={55}
+                                    height={55}
+                                    quality={100}
+                                />
+                                <div className=" flex font-bold text-xl sm:text-3xl tracking-[0.04rem] uppercase">
+                                    Nothing was found
+                                </div>
+                            </div>
+                            <div className=" mt-10 text-gray-400">
+                                Try changing filters or selecting a different date
+                            </div>
+                        </div>
+                    </Reveal>
+                </div>
                 {news.map((curNews) => (
                     <Reveal key={curNews.id}>
                         <NewsBlock
@@ -64,6 +87,8 @@ const InfiniteScrollNews = ({
                             source_url={curNews.source_url}
                             authors={curNews.authors}
                             likes={curNews.likes}
+                            company_names={curNews.company_names}
+                            region_name={curNews.region_name}
                         />
                     </Reveal>
                 ))}
@@ -113,18 +138,36 @@ interface NewsBlockProps {
     source_url: string
     authors: string
     likes: number
+    company_names: string
+    region_name: string
 }
-const NewsBlock = ({ title, body, post_date, source_url, authors, likes }: NewsBlockProps) => {
+const NewsBlock = ({ title, body, post_date, source_url, authors, likes, company_names, region_name }: NewsBlockProps) => {
     //formatting date
     const parsedDate = parseISO(post_date);
     const formattedDate = format(parsedDate, "h:mm, MMMM d, yyyy");
 
+    const formatInputStringAddingSpace = (items: string) => {
+        return items
+            .split(',')
+            .map(item => item.trim())
+            .join(', ');
+    }
+    //formatting authors
     let formattedAuthors = '';
     if (authors) {
-        formattedAuthors = authors
-            .split(',')
-            .map(author => author.trim())
-            .join(', ');
+        formattedAuthors = formatInputStringAddingSpace(authors)
+    }
+
+    //formatting authors
+    let formattedCompanies = '';
+    if (company_names) {
+        formattedCompanies = formatInputStringAddingSpace(company_names)
+    }
+
+    //formatting regions
+    let formattedRegions = ''
+    if (region_name) {
+        formattedRegions = formatInputStringAddingSpace(region_name)
     }
 
     return (
@@ -133,7 +176,7 @@ const NewsBlock = ({ title, body, post_date, source_url, authors, likes }: NewsB
                 {title}
             </div>
 
-            <div className=" text-sm ">
+            <div className=" text-sm whitespace-pre-line ">
                 {body}
             </div>
 
@@ -159,11 +202,11 @@ const NewsBlock = ({ title, body, post_date, source_url, authors, likes }: NewsB
                 </div>
                 <div className=" flex flex-col gap-2" >
                     <div className=" flex gap-2 justify-end">
-                        <p>Aboba Company</p>
+                        <p>{formattedCompanies}</p>
                         <BsBuildings size={16} />
                     </div>
                     <div className=" flex gap-2 justify-end">
-                        <p>Volyn region, Jagodzin</p>
+                        <p>{formattedRegions}</p>
                         <IoLocationOutline size={16} />
 
                     </div>

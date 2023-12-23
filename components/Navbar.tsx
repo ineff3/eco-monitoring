@@ -186,7 +186,7 @@ const NavLinks = () => {
             <div className={`lg:hidden border border-b-black border-opacity-40  w-full ${pathname !== '/' ? ' block' : ' hidden'} `}></div>
 
             <nav className={` w-full lg:w-auto ${pathname !== '/news' ? ' block' : ' hidden'}`} >
-                <Link className={pathname === '/news' ? activeLinkStyles : inactiveLinkStyles + inactiveHoverStyles} href={'/news'}>
+                <Link className={pathname === '/news' ? activeLinkStyles : inactiveLinkStyles + inactiveHoverStyles} href={'/news?order=Newer%20to%20older'}>
                     <Image
                         src='/header-icons/news-header.png'
                         alt='News'
