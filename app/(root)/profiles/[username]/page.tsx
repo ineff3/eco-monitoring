@@ -4,6 +4,7 @@ import { NewsSection } from "@/components";
 import { useSession } from "next-auth/react";
 import { redirect } from "next/navigation";
 import Image from 'next/image'
+import { LuExternalLink } from "react-icons/lu";
 
 const UserProfilePage = () => {
     const { data: session } = useSession({
@@ -38,9 +39,9 @@ const UserProfilePage = () => {
                         </div>
                     </div>
                 </div>
-                <div className=" w-full bg-white h-[600px] ">
+                <div className=" w-full bg-white h-[800px] ">
                     <div className=" w-full max-w-[1100px] mx-auto pl-[145px] md:pl-[210px] pr-12 py-3">
-                        <div className="flex">
+                        <div className="flex gap-10">
                             <div className=" flex flex-col gap-1 ">
                                 <p className=" font-bold text-dark text-2xl md:text-4xl ">{session?.user.userName}</p>
                                 <p className=" text-dark text-sm md:text-lg tracking-wider">{session?.user.email}</p>
@@ -70,6 +71,15 @@ const UserProfilePage = () => {
                                         />
                                     </div>
                                 </div>
+                            </div>
+                            <div className={`${session?.user.role.includes('Admin') ? 'block' : 'hidden'}`}>
+                                <a className=" flex items-center gap-2 w-fit h-fit py-3 px-5 rounded-[15px] border border-[#d3d3d3] hover:bg-slate-200 transition-colors duration-150 "
+                                    target="_blank"
+                                    href={`http://localhost:3001`}
+                                >
+                                    <p className=" text-lg relative top-[0.1rem]">Go to admin-panel</p>
+                                    <LuExternalLink size={20} />
+                                </a>
                             </div>
                         </div>
                     </div>

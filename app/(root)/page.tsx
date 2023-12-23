@@ -7,7 +7,6 @@ const Home = () => {
             <Hero />
             <Services />
             <NewsSection />
-            <div className=' h-[600px]'>Aboba</div>
         </div>
     )
 }
