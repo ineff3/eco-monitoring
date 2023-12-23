@@ -3,9 +3,25 @@ import Image from 'next/image'
 import { PiMagnifyingGlassLight } from "react-icons/pi";
 import { Disclosure, Transition } from '@headlessui/react'
 import { RiArrowDownSLine } from "react-icons/ri";
-
+import { NewsByRegoinType, NewsNarrowType } from '@/types';
+import { useEffect, useState } from 'react';
+import { getRegionNews } from '@/actions/basic-actions/actions';
+import { useRouter } from 'next/navigation'
 
 const SideBar = () => {
+    const [newsByRegion, setNewsByRegion] = useState<NewsByRegoinType[]>([])
+
+    useEffect(() => {
+        const getNewsByRegion = async () => {
+            const result = await getRegionNews();
+            setNewsByRegion(result)
+        }
+
+        getNewsByRegion()
+    }, [])
+
+
+
     return (
         <div className='  flex flex-col items-center bg-white h-screen overflow-y-auto pt-8 pb-[120px] px-7 w-[320px]'>
 
@@ -30,9 +46,16 @@ const SideBar = () => {
                     <PiMagnifyingGlassLight size={20} />
                 </div>
                 <div className=' flex flex-col gap-3 '>
-                    <NewsDisclosure title='Volyn' />
+                    {newsByRegion.map((item, index) => (
+                        <NewsDisclosure
+                            title={item.region_name}
+                            narrowNews={item.news}
+                            key={index}
+                        />
+                    ))}
+                    {/* <NewsDisclosure title='Volyn' />
                     <NewsDisclosure title='Kyiv Region' />
-                    <NewsDisclosure title='Ivano-Frankiv Region' />
+                    <NewsDisclosure title='Ivano-Frankiv Region' /> */}
                 </div>
             </div>
 
@@ -43,9 +66,10 @@ export default SideBar;
 
 interface NewsDisclosureProps {
     title: string
+    narrowNews: NewsNarrowType[]
 }
 
-const NewsDisclosure = ({ title }: NewsDisclosureProps) => {
+const NewsDisclosure = ({ title, narrowNews }: NewsDisclosureProps) => {
     return (
         <div className="mx-auto w-full max-w-md flex flex-col ">
             <Disclosure>
@@ -68,10 +92,17 @@ const NewsDisclosure = ({ title }: NewsDisclosureProps) => {
                             leaveTo="transform scale-95 opacity-0"
                         >
                             <Disclosure.Panel className=" flex flex-col gap-3 bg-[#f0f0f0] rounded-[10px] mt-3 mb-5 px-3 py-3 text-sm  ">
+                                {narrowNews.map((item) => (
+                                    <DisclosureTopic
+                                        title={item.title}
+                                        id={item.id}
+                                        key={item.id}
+                                    />
+                                ))}
+                                {/* <DisclosureTopic />
                                 <DisclosureTopic />
                                 <DisclosureTopic />
-                                <DisclosureTopic />
-                                <DisclosureTopic />
+                                <DisclosureTopic /> */}
                             </Disclosure.Panel>
                         </Transition>
                     </>
@@ -82,13 +113,19 @@ const NewsDisclosure = ({ title }: NewsDisclosureProps) => {
     )
 }
 
-const DisclosureTopic = () => {
+const DisclosureTopic = ({ title, id }: { title: string, id: number }) => {
+    const router = useRouter()
+    const addSelectedNewsFilter = () => {
+        router.push(`/news?order=Newer%20to%20older&selectedNewsId=${id}`);
+    }
     return (
-        <div className=' flex gap-3 items-center hover:text-gray-500'>
+        <div className=' flex gap-3 items-center hover:text-gray-500'
+            onClick={addSelectedNewsFilter}
+        >
             <div>
                 <div className=' bg-primary w-[12px] h-[12px] rounded-full'></div>
             </div>
-            <p>Тим часом на польському кордоні триває страйк перевізників. На польській стороні</p>
+            <p>{title}</p>
         </div>
     )
 }

@@ -1,7 +1,7 @@
 "use server"
 import fetch from 'node-fetch';
 import https from 'https';
-import { CityType, CustomServerFilteredNewsResponse, CustomServerResponse, CustomServerResponseObj, RfcFactorType, SearchParamsProps } from '@/types';
+import { CityType, CustomServerFilteredNewsResponse, CustomServerGetNewsById, CustomServerRegionNewsResponse, CustomServerResponse, CustomServerResponseObj, NewsType, RfcFactorType, SearchParamsProps } from '@/types';
 import { CarcinogenicFactorsSchema, CompensationFactorsSchema, NonCarcinogenicFactorsSchema, TaxesInputSchema } from '@/schemas';
 import { formatServerErrors, getErrorMessage } from '../secondary-utils/errorHandling';
 import { getServerSession } from "next-auth/next"
@@ -273,6 +273,9 @@ export const getFilteredNews = async (page?: number, filters?: SearchParamsProps
                     const separatedRegions = regions.map((id: any) => `region_ids=${id}`).join('&');
                     return separatedRegions
                 }
+                else if (key === 'selectedNewsId') {
+                    return null
+                }
                 return `${key}=${value}`
             })
             .filter(Boolean)
@@ -288,7 +291,7 @@ export const getFilteredNews = async (page?: number, filters?: SearchParamsProps
 
     try {
         // console.log(`GetNewsByFilter?count=2&page=${curPage}&${queryString}`)
-        const response = await fetch(`${link}api/News/GetNewsByFilter?count=2&page=${curPage}&${queryString}`, fetchOptions);
+        const response = await fetch(`${link}api/News/GetNewsByFilter?count=4&page=${curPage}&${queryString}`, fetchOptions);
 
         if (!response.ok) {
             throw new Error(`HTTP error! Status: ${response.status}`);
@@ -304,6 +307,48 @@ export const getFilteredNews = async (page?: number, filters?: SearchParamsProps
             isItEnd: true,
             selectedNews: []
         }
+    }
+}
+export const getRegionNews = async () => {
+    const fetchOptions = {
+        method: 'GET',
+        agent,
+    };
+
+    try {
+        const response = await fetch(`${link}api/News/GetRegionNews?regionsCount=3&newsCount=4`, fetchOptions);
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        const data = await response.json() as CustomServerRegionNewsResponse;
+
+        return data.result;
+    } catch (error) {
+        console.error('Error:', error);
+        return [];
+    }
+}
+export const getNewsById = async (id: number) => {
+    const fetchOptions = {
+        method: 'GET',
+        agent,
+    };
+
+    try {
+        const response = await fetch(`${link}api/News/GetNewsById?newsId=${id}`, fetchOptions);
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        const data = await response.json() as CustomServerGetNewsById;
+
+        return data.result;
+    } catch (error) {
+        console.error('Error:', error);
+        return null;
     }
 }
 

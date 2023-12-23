@@ -78,8 +78,8 @@ const InfiniteScrollNews = ({
                         </div>
                     </Reveal>
                 </div>
-                {news.map((curNews) => (
-                    <Reveal key={curNews.id}>
+                {news.map((curNews, index) => (
+                    Number(searchParams?.selectedNewsId) === curNews.id && index > 0 ? <></> : <Reveal key={curNews.id}>
                         <NewsBlock
                             title={curNews.title}
                             body={curNews.body}
@@ -88,7 +88,7 @@ const InfiniteScrollNews = ({
                             authors={curNews.authors}
                             likes={curNews.likes}
                             company_names={curNews.company_names}
-                            region_name={curNews.region_name}
+                            region_names={curNews.region_names}
                         />
                     </Reveal>
                 ))}
@@ -139,9 +139,9 @@ interface NewsBlockProps {
     authors: string
     likes: number
     company_names: string
-    region_name: string
+    region_names: string
 }
-const NewsBlock = ({ title, body, post_date, source_url, authors, likes, company_names, region_name }: NewsBlockProps) => {
+const NewsBlock = ({ title, body, post_date, source_url, authors, likes, company_names, region_names }: NewsBlockProps) => {
     //formatting date
     const parsedDate = parseISO(post_date);
     const formattedDate = format(parsedDate, "h:mm, MMMM d, yyyy");
@@ -166,8 +166,8 @@ const NewsBlock = ({ title, body, post_date, source_url, authors, likes, company
 
     //formatting regions
     let formattedRegions = ''
-    if (region_name) {
-        formattedRegions = formatInputStringAddingSpace(region_name)
+    if (region_names) {
+        formattedRegions = formatInputStringAddingSpace(region_names)
     }
 
     return (

@@ -3,8 +3,8 @@ import { Exo } from 'next/font/google'
 import { Reveal } from "@/components";
 import FilterBar from "./FilterBar";
 import InfiniteScrollNews from './InfiniteScrollNews';
-import { getFilteredNews } from '@/actions/basic-actions/actions';
-import { SearchParamsProps } from '@/types';
+import { getFilteredNews, getNewsById } from '@/actions/basic-actions/actions';
+import { NewsType, SearchParamsProps } from '@/types';
 
 const exo = Exo({
     subsets: ['latin'],
@@ -19,8 +19,16 @@ const NewsPage = async ({
     searchParams: SearchParamsProps
 }) => {
 
+    let selectedNews: NewsType | null = null;
+    if (searchParams?.selectedNewsId) {
+        const response = await getNewsById(Number(searchParams?.selectedNewsId))
+        if (response !== null) {
+            selectedNews = response;
+        }
+    }
+
     const response = await getFilteredNews(0, searchParams);
-    const news = response.selectedNews;
+    const news = selectedNews !== null ? [selectedNews, ...response.selectedNews] : response.selectedNews
     const isEnd = response.isItEnd
 
 

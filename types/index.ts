@@ -92,7 +92,7 @@ export interface NewsType {
     source_url: string
     likes: number
     authors: string
-    region_name: string
+    region_names: string
     company_names: string
 }
 export interface CustomServerFilteredNewsResponse {
@@ -112,4 +112,27 @@ export interface SearchParamsProps {
     fromDate: string,
     toDate: string
     regions: string
+    selectedNewsId: string
 }
+export interface NewsNarrowType {
+    id: number
+    title: string
+}
+export interface NewsByRegoinType {
+    region_name: string
+    news: NewsNarrowType[]
+}
+
+export interface CustomServerRegionNewsResponse {
+    statusCode: number;
+    isSuccess: boolean;
+    errorMessages: string[];
+    result: NewsByRegoinType[]
+}
+export interface CustomServerGetNewsById {
+    statusCode: number;
+    isSuccess: boolean;
+    errorMessages: string[];
+    result: NewsType
+}
+
