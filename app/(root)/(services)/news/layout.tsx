@@ -13,7 +13,7 @@ const NewsLayout = ({
                 <SideBar />
             </div>
             <div className=" w-full lg:ml-[320px]">
-                <div className=" max-w-[1240px] mx-auto flex flex-auto">
+                <div className=" max-w-[1440px] mx-auto flex flex-auto">
                     {children}
                 </div>
             </div>

@@ -71,7 +71,6 @@ const EmissionTaxesContent = ({ companies, taxYears }: Props) => {
         if (response && typeof response === 'object' && 'error' in response) {
             toast.custom((t) => <ErrorToast t={t} message={response.error} />);
         } else {
-            console.log(response)
             setResultTaxes(response)
             toast.custom((t) => <SuccessfulToast t={t} message='Emission taxes successfuly calculated' />, { duration: 1000 });
         }

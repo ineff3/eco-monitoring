@@ -13,17 +13,26 @@ const exo = Exo({
     variable: '--font-exo',
     display: 'swap'
 })
+interface CalendarRangeType {
+    startDate: Date;
+    endDate: Date;
+    key: string;
+}
+interface Props {
+    range: CalendarRangeType[]
+    setRange: any
+}
 
-const DateRangeComp = () => {
+const DateRangeComp = ({ range, setRange }: Props) => {
 
     // date state
-    const [range, setRange] = useState([
-        {
-            startDate: new Date() as Date,
-            endDate: addDays(new Date(), 7) as Date,
-            key: 'selection'
-        }
-    ])
+    // const [range, setRange] = useState([
+    //     {
+    //         startDate: new Date() as Date,
+    //         endDate: addDays(new Date(), 7) as Date,
+    //         key: 'selection'
+    //     }
+    // ])
     // open close
     const [open, setOpen] = useState(false)
 

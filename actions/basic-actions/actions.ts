@@ -1,7 +1,7 @@
 "use server"
 import fetch from 'node-fetch';
 import https from 'https';
-import { CityType, CustomServerResponse, CustomServerResponseObj, RfcFactorType } from '@/types';
+import { CityType, CustomServerFilteredNewsResponse, CustomServerResponse, CustomServerResponseObj, RfcFactorType, SearchParamsProps } from '@/types';
 import { CarcinogenicFactorsSchema, CompensationFactorsSchema, NonCarcinogenicFactorsSchema, TaxesInputSchema } from '@/schemas';
 import { formatServerErrors, getErrorMessage } from '../secondary-utils/errorHandling';
 import { getServerSession } from "next-auth/next"
@@ -207,6 +207,33 @@ export const getTaxYears = async () => {
         return [];
     }
 }
+
+export const getFilteredNews = async (page?: number, filters?: SearchParamsProps) => {
+    const curPage = page ? page : '';
+    const fetchOptions = {
+        method: 'GET',
+        agent,
+    };
+
+    try {
+        const response = await fetch(`${link}api/News/GetNewsByFilter?count=2&page=${curPage}`, fetchOptions);
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        const data = await response.json() as CustomServerFilteredNewsResponse;
+
+        return data.result;
+    } catch (error) {
+        console.error('Error:', error);
+        return {
+            isItEnd: true,
+            selectedNews: []
+        }
+    }
+}
+
 
 export const getCalculatedCarcinogenicRisk = async (carcinogenicFactors: unknown) => {
     // const session = await getServerSession(authOptions)

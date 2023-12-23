@@ -15,7 +15,6 @@ export interface CustomServerResponseObj {
 export interface CompanyType {
     name: string;
     description: string;
-    location: string
     id: number;
     city_id: number
 }
@@ -83,4 +82,33 @@ export interface BodyType {
 export interface NonCarcinogenicDataType {
     c: string
     rfc: string
+}
+
+export interface NewsType {
+    id: number
+    title: string
+    body: string
+    post_date: string
+    source_url: string
+    likes: number
+    authors: string
+    region_name: string
+    company_names: string
+}
+export interface CustomServerFilteredNewsResponse {
+    statusCode: number;
+    isSuccess: boolean;
+    errorMessages: string[];
+    result: {
+        remainingRowsCount: number,
+        isItEnd: boolean,
+        selectedNews: NewsType[]
+    };
+}
+export interface SearchParamsProps {
+    order: string,
+    authors: string,
+    companies: string,
+    startDate: string,
+    endDate: string
 }
