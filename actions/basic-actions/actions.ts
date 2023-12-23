@@ -1,7 +1,7 @@
 "use server"
 import fetch from 'node-fetch';
 import https from 'https';
-import { CityType, CustomServerFilteredNewsResponse, CustomServerGetNewsById, CustomServerRegionNewsResponse, CustomServerResponse, CustomServerResponseObj, NewsType, RfcFactorType, SearchParamsProps } from '@/types';
+import { CityType, CustomServerFilteredNewsResponse, CustomServerGetNewsById, CustomServerNewsActiveRegions, CustomServerRegionNewsResponse, CustomServerResponse, CustomServerResponseObj, NewsType, RfcFactorType, SearchParamsProps } from '@/types';
 import { CarcinogenicFactorsSchema, CompensationFactorsSchema, NonCarcinogenicFactorsSchema, TaxesInputSchema } from '@/schemas';
 import { formatServerErrors, getErrorMessage } from '../secondary-utils/errorHandling';
 import { getServerSession } from "next-auth/next"
@@ -349,6 +349,51 @@ export const getNewsById = async (id: number) => {
     } catch (error) {
         console.error('Error:', error);
         return null;
+    }
+}
+export const getNewsForHomePage = async (count: number) => {
+    const fetchOptions = {
+        method: 'GET',
+        agent,
+    };
+
+    try {
+        const response = await fetch(`${link}api/News/GetNewsByFilter?count=${count}&page=0&newerToOlder=true`, fetchOptions);
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        const data = await response.json() as CustomServerFilteredNewsResponse;
+
+        return data.result;
+    } catch (error) {
+        console.error('Error:', error);
+        return {
+            isItEnd: true,
+            selectedNews: []
+        }
+    }
+}
+export const getActiveRegions = async (numberOfRegions: number) => {
+    const fetchOptions = {
+        method: 'GET',
+        agent,
+    };
+
+    try {
+        const response = await fetch(`${link}api/News/GetNewsActiveRegions?countOfRegions=${numberOfRegions}`, fetchOptions);
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        const data = await response.json() as CustomServerNewsActiveRegions;
+
+        return data.result;
+    } catch (error) {
+        console.error('Error:', error);
+        return []
     }
 }
 

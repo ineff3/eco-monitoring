@@ -41,29 +41,30 @@ export const options = {
     },
 };
 
-const labels = ['Ivano-Frankivsk', 'Dnipropetrovsk', 'Kirovohrad', 'Kyiv'];
-
-export const data = {
-    labels,
-    datasets: [
-        {
-            label: 'City',
-            data: [5, 7, 10, 18],
-            backgroundColor: '#c6e6d6',
-            barThickness: 50,
-            maxBarThickness: 100,
-            borderColor: '#d3d3d3',
-            borderWidth: 1
-        },
-    ],
-};
 
 
-const RecentNewsBarChart = () => {
+
+const RecentNewsBarChart = ({ labels, values }: { labels: string[], values: number[] }) => {
+    // const labels = ['Ivano-Frankivsk', 'Dnipropetrovsk', 'Kirovohrad', 'Kyiv'];
+    const data = {
+        labels,
+        datasets: [
+            {
+                label: 'City',
+                data: values,
+                backgroundColor: '#c6e6d6',
+                barThickness: 50,
+                maxBarThickness: 100,
+                borderColor: '#d3d3d3',
+                borderWidth: 1
+            },
+        ],
+    };
+
     return (
         <Bar
             options={options}
-            data={data}
+            data={data as any}
         />
     )
 }

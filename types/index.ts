@@ -135,4 +135,15 @@ export interface CustomServerGetNewsById {
     errorMessages: string[];
     result: NewsType
 }
+export interface ActiveRegionType {
+    name: string
+    count: number
+}
+
+export interface CustomServerNewsActiveRegions {
+    statusCode: number;
+    isSuccess: boolean;
+    errorMessages: string[];
+    result: ActiveRegionType[]
+}
 
