@@ -201,18 +201,18 @@ const NewsBlock = ({ title, body, post_date, source_url, authors, likes, company
                     </a>
                 </div>
                 <div className=" flex flex-col gap-2" >
-                    <div className=" flex gap-2 justify-end">
+                    <div className=" flex gap-2 justify-end items-center max-w-[220px] text-right">
                         <p>{formattedCompanies}</p>
-                        <BsBuildings size={16} />
+                        <div className=' flex w-[16px] h-[16px]'><BsBuildings size={16} /></div>
                     </div>
-                    <div className=" flex gap-2 justify-end">
+                    <div className=" flex gap-2 justify-end items-center max-w-[220px] text-right">
                         <p>{formattedRegions}</p>
-                        <IoLocationOutline size={16} />
+                        <div className=' flex w-[16px] h-[16px]'><IoLocationOutline size={16} /></div>
 
                     </div>
-                    <div className=" flex gap-2 justify-end">
+                    <div className=" flex gap-2 justify-end items-center max-w-[220px] text-right">
                         <p className=" flex items-center">Written by. {formattedAuthors}</p>
-                        <PiFeatherLight size={16} />
+                        <div className=' flex w-[16px] h-[16px]'><PiFeatherLight size={16} /></div>
 
                     </div>
                 </div>
