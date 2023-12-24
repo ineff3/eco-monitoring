@@ -201,7 +201,7 @@ const NewsBlock = ({ title, body, post_date, source_url, authors, likes, company
                     </a>
                 </div>
                 <div className=" flex flex-col gap-2" >
-                    <div className=" flex gap-2 justify-end items-center max-w-[220px] text-right">
+                    <div className={` flex gap-2 justify-end items-center max-w-[220px] text-right ${formattedCompanies ? 'flex' : 'hidden'}`}>
                         <p>{formattedCompanies}</p>
                         <div className=' flex w-[16px] h-[16px]'><BsBuildings size={16} /></div>
                     </div>

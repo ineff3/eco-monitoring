@@ -13,6 +13,7 @@ import { Menu, Transition } from '@headlessui/react'
 import { IoSettingsOutline } from "react-icons/io5"
 import { PiSignOut } from "react-icons/pi";
 import { useSearchParams } from 'next/navigation'
+import { CustomButton } from '.';
 
 
 const Navbar = ({ menu, handleMenu }: { menu: boolean, handleMenu: () => void }) => {
@@ -284,10 +285,15 @@ const NavEndOptions = ({ handleSearchOpen, loginModalToOpen }: { handleSearchOpe
                 </>
             ) : (
                 <>
-                    <button className=' bg-dark bg-opacity-80 text-white px-6 py-2 rounded-lg'
+                    <CustomButton
+                        title='SIGN IN'
+                        onClick={() => setIsModalOpen(true)}
+                        styleType='light'
+                    />
+                    {/* <button className=' bg-dark bg-opacity-80 text-white px-6 py-2 rounded-lg'
                         onClick={() => setIsModalOpen(true)}>
                         <span className=' relative top-[0.08rem]'>Sign In</span>
-                    </button>
+                    </button> */}
                     <LoginModal
                         isOpen={isModalOpen}
                         setIsOpen={setIsModalOpen}

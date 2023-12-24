@@ -230,7 +230,7 @@ export const getTaxYears = async () => {
 }
 
 export const getFilteredNews = async (page?: number, filters?: SearchParamsProps) => {
-    console.log(filters)
+    // console.log(filters)
     let queryString = ''
     if (filters) {
         queryString = Object.entries(filters)

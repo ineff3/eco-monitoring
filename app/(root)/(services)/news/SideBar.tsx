@@ -37,14 +37,14 @@ const SideBar = () => {
             </div>
             <div className=' w-full flex flex-col gap-8'>
 
-                <div className=' flex items-center justify-between border border-[#d3d3d3] rounded-[10px] bg-white py-2.5 px-5'>
+                {/* <div className=' flex items-center justify-between border border-[#d3d3d3] rounded-[10px] bg-white py-2.5 px-5'>
                     <input
                         placeholder='Search region'
                         className=' outline-none w-full'
                         type="text"
                     />
                     <PiMagnifyingGlassLight size={20} />
-                </div>
+                </div> */}
                 <div className=' flex flex-col gap-3 '>
                     {newsByRegion.map((item, index) => (
                         <NewsDisclosure
@@ -53,9 +53,6 @@ const SideBar = () => {
                             key={index}
                         />
                     ))}
-                    {/* <NewsDisclosure title='Volyn' />
-                    <NewsDisclosure title='Kyiv Region' />
-                    <NewsDisclosure title='Ivano-Frankiv Region' /> */}
                 </div>
             </div>
 
