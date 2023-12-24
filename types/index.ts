@@ -94,6 +94,7 @@ export interface NewsType {
     authors: string
     region_names: string
     company_names: string
+    isLiked: boolean
 }
 export interface CustomServerFilteredNewsResponse {
     statusCode: number;
@@ -145,5 +146,11 @@ export interface CustomServerNewsActiveRegions {
     isSuccess: boolean;
     errorMessages: string[];
     result: ActiveRegionType[]
+}
+export interface CustomServerLikeNewsResponse {
+    statusCode: number;
+    isSuccess: boolean;
+    errorMessages: string[];
+    result: number
 }
 

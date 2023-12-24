@@ -3,13 +3,15 @@ import { IoCalendarOutline, IoLocationOutline, IoEyeOutline } from "react-icons/
 import { BsBuildings } from "react-icons/bs";
 import { PiFeatherLight } from "react-icons/pi";
 import { Exo } from 'next/font/google'
-import { Reveal } from "@/components";
+import { LoginModal, Reveal } from "@/components";
 import { NewsType, SearchParamsProps } from "@/types";
 import { useEffect, useState } from "react";
 import { format, parseISO } from 'date-fns';
-import { getFilteredNews } from "@/actions/basic-actions/actions";
+import { getFilteredNews, likeNews } from "@/actions/basic-actions/actions";
 import { useInView } from "react-intersection-observer";
 import Image from 'next/image'
+import { GoHeart, GoHeartFill } from "react-icons/go";
+import { useSession } from 'next-auth/react'
 
 const exo = Exo({
     subsets: ['latin'],
@@ -30,6 +32,7 @@ const InfiniteScrollNews = ({
     const [page, setPage] = useState(0)
     const [ref, inView] = useInView()
     const [isEnd, setIsEnd] = useState(initialIsEnd)
+    const [isModalOpen, setIsModalOpen] = useState(false)
 
     const loadMoreNews = async () => {
         const nextPage = page + 1;
@@ -81,6 +84,7 @@ const InfiniteScrollNews = ({
                 {news.map((curNews, index) => (
                     Number(searchParams?.selectedNewsId) === curNews.id && index > 0 ? <></> : <Reveal key={curNews.id}>
                         <NewsBlock
+                            id={curNews.id}
                             title={curNews.title}
                             body={curNews.body}
                             post_date={curNews.post_date}
@@ -89,6 +93,8 @@ const InfiniteScrollNews = ({
                             likes={curNews.likes}
                             company_names={curNews.company_names}
                             region_names={curNews.region_names}
+                            isLiked={curNews.isLiked}
+                            setIsModalOpen={setIsModalOpen}
                         />
                     </Reveal>
                 ))}
@@ -124,6 +130,10 @@ const InfiniteScrollNews = ({
                 </svg>
                 <span className='sr-only'>Loading...</span>
             </div>
+            <LoginModal
+                isOpen={isModalOpen}
+                setIsOpen={setIsModalOpen}
+            />
         </div>
     )
 }
@@ -132,6 +142,7 @@ export default InfiniteScrollNews
 
 
 interface NewsBlockProps {
+    id: number
     title: string
     body: string
     post_date: string
@@ -140,8 +151,36 @@ interface NewsBlockProps {
     likes: number
     company_names: string
     region_names: string
+    isLiked: boolean
+    setIsModalOpen: (state: boolean) => void
 }
-const NewsBlock = ({ title, body, post_date, source_url, authors, likes, company_names, region_names }: NewsBlockProps) => {
+const NewsBlock = ({ id, title, body, post_date, source_url, authors, likes, company_names, region_names, isLiked, setIsModalOpen }: NewsBlockProps) => {
+    const { data: session } = useSession();
+    const [currentIsLiked, setCurrentIsLiked] = useState(isLiked)
+    const [updatedLikes, setUpdatedLikes] = useState(likes)
+    console.log(likes + ' ' + title)
+
+    const clientLike = async () => {
+        if (session?.user.id) {
+            const response = await likeNews(session?.user.id, id)
+            console.log(response)
+            if (response !== -1) {
+                if (currentIsLiked) {
+                    setUpdatedLikes(response)
+                } else {
+                    setUpdatedLikes(response)
+                }
+                setCurrentIsLiked(!currentIsLiked)
+            }
+        }
+        else {
+            setIsModalOpen(true)
+        }
+
+    }
+    useEffect(() => {
+
+    }, [likes])
     //formatting date
     const parsedDate = parseISO(post_date);
     const formattedDate = format(parsedDate, "h:mm, MMMM d, yyyy");
@@ -183,8 +222,11 @@ const NewsBlock = ({ title, body, post_date, source_url, authors, likes, company
             <div className={`flex flex-row items-end justify-between ${exo.className} text-[12px]  `} >
                 <div className=" flex flex-col gap-2 justify-end">
                     <div className=" flex gap-2">
-                        <IoEyeOutline size={16} />
-                        <p>{likes}</p>
+                        <div onClick={clientLike}>
+                            {currentIsLiked ? <GoHeartFill size={16} className=' hover:scale-125 transition-transform duration-150' /> :
+                                <GoHeart size={16} className=' hover:scale-125 transition-transform duration-150' />}
+                        </div>
+                        <p>{updatedLikes}</p>
                     </div>
                     <div className=" flex gap-2">
                         <IoCalendarOutline size={16} />

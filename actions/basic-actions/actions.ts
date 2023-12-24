@@ -1,7 +1,7 @@
 "use server"
 import fetch from 'node-fetch';
 import https from 'https';
-import { CityType, CustomServerFilteredNewsResponse, CustomServerGetNewsById, CustomServerNewsActiveRegions, CustomServerRegionNewsResponse, CustomServerResponse, CustomServerResponseObj, NewsType, RfcFactorType, SearchParamsProps } from '@/types';
+import { CityType, CustomServerFilteredNewsResponse, CustomServerGetNewsById, CustomServerLikeNewsResponse, CustomServerNewsActiveRegions, CustomServerRegionNewsResponse, CustomServerResponse, CustomServerResponseObj, NewsType, RfcFactorType, SearchParamsProps } from '@/types';
 import { CarcinogenicFactorsSchema, CompensationFactorsSchema, NonCarcinogenicFactorsSchema, TaxesInputSchema } from '@/schemas';
 import { formatServerErrors, getErrorMessage } from '../secondary-utils/errorHandling';
 import { getServerSession } from "next-auth/next"
@@ -230,6 +230,7 @@ export const getTaxYears = async () => {
 }
 
 export const getFilteredNews = async (page?: number, filters?: SearchParamsProps) => {
+    const session = await getServerSession(authOptions)
     // console.log(filters)
     let queryString = ''
     if (filters) {
@@ -281,17 +282,24 @@ export const getFilteredNews = async (page?: number, filters?: SearchParamsProps
             .filter(Boolean)
             .join('&');
     }
-    console.log(queryString)
+    // console.log(queryString)
 
     const curPage = page ? page : '';
-    const fetchOptions = {
+    const fetchOptions = session ? {
         method: 'GET',
+        agent,
+    } : {
+        method: 'GET',
+        'Authorization': `bearer ${session?.user.token}`,
         agent,
     };
 
     try {
-        // console.log(`GetNewsByFilter?count=2&page=${curPage}&${queryString}`)
-        const response = await fetch(`${link}api/News/GetNewsByFilter?count=4&page=${curPage}&${queryString}`, fetchOptions);
+        const fetchUrl = session?.user.id ?
+            `${link}api/News/GetNewsByFilter?count=4&userId=${session?.user.id}&page=${curPage}&${queryString}` :
+            `${link}api/News/GetNewsByFilter?count=4&page=${curPage}&${queryString}`
+        console.log(fetchUrl)
+        const response = await fetch(fetchUrl, fetchOptions);
 
         if (!response.ok) {
             throw new Error(`HTTP error! Status: ${response.status}`);
@@ -331,13 +339,21 @@ export const getRegionNews = async () => {
     }
 }
 export const getNewsById = async (id: number) => {
-    const fetchOptions = {
+    const session = await getServerSession(authOptions)
+    const fetchOptions = session ? {
         method: 'GET',
+        agent,
+    } : {
+        method: 'GET',
+        'Authorization': `bearer ${session?.user.token}`,
         agent,
     };
 
     try {
-        const response = await fetch(`${link}api/News/GetNewsById?newsId=${id}`, fetchOptions);
+        const fetchUrl = session?.user.id ?
+            `${link}api/News/GetNewsById?newsId=${id}&userId=${session?.user.id}` :
+            `${link}api/News/GetNewsById?newsId=${id}`
+        const response = await fetch(fetchUrl, fetchOptions);
 
         if (!response.ok) {
             throw new Error(`HTTP error! Status: ${response.status}`);
@@ -394,6 +410,32 @@ export const getActiveRegions = async (numberOfRegions: number) => {
     } catch (error) {
         console.error('Error:', error);
         return []
+    }
+}
+export const likeNews = async (userId: string, newsId: number) => {
+    const session = await getServerSession(authOptions)
+    try {
+        const fetchOptions = {
+            method: 'POST',
+            headers: {
+                'accept': 'text/plain',
+                'Content-Type': 'application/json',
+                'Authorization': `bearer ${session?.user.token}`
+            },
+            agent
+        };
+        const response = await fetch(`${link}api/News/LikeNews?userId=${userId}&newsId=${newsId}`, fetchOptions)
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        const data = await response.json() as CustomServerLikeNewsResponse;
+        return data.result;
+    }
+    catch (error) {
+        console.log(error)
+        return -1;
     }
 }
 
