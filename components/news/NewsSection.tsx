@@ -8,6 +8,7 @@ import { getActiveRegions, getNewsForHomePage } from "@/actions/basic-actions/ac
 import { ActiveRegionType, NewsType } from "@/types";
 import { format, parseISO } from 'date-fns';
 import Link from 'next/link'
+import { parse, addDays, subDays } from 'date-fns'
 import { useRouter } from "next/navigation";
 
 const exo = Exo({
@@ -27,7 +28,9 @@ const NewsSection = () => {
             setNews(response.selectedNews)
         }
         const fetchActiveRegions = async (numberOfRegions: number) => {
-            const response = await getActiveRegions(numberOfRegions)
+            const fromDate = subDays(new Date(), 7);
+            const toDate = new Date();
+            const response = await getActiveRegions(numberOfRegions, format(fromDate, 'yyyy-MM-dd'), format(toDate, 'yyyy-MM-dd'))
             setActiveRegions(response)
         }
         fetchNews(4)
@@ -44,7 +47,9 @@ const NewsSection = () => {
                                 <p className=" relative top-[0.2rem] font-bold text-[22px] sm:text-4xl tracking-wider">
                                     RECENT NEWS
                                 </p>
-                                <div className={`  font-bold ${exo.className} border border-[#d3d3d3] bg-primary rounded-[10px] px-1 sm:px-4 flex items-center text-dark text-xl tracking-widest `}>+10</div>
+                                <div className={`  font-bold ${exo.className} border border-[#d3d3d3] bg-primary rounded-[10px] px-1 sm:px-4 flex items-center text-dark text-xl tracking-widest `}>
+                                    {activeRegions.reduce((acc, curr) => acc + curr.count, 0)}
+                                </div>
                             </div>
                             <p className=" text-sm">The most active regions of Ukraine over the past 24 hours</p>
                             <div className=" h-[300px] hidden sm:block">

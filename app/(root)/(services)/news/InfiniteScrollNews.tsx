@@ -158,12 +158,12 @@ const NewsBlock = ({ id, title, body, post_date, source_url, authors, likes, com
     const { data: session } = useSession();
     const [currentIsLiked, setCurrentIsLiked] = useState(isLiked)
     const [updatedLikes, setUpdatedLikes] = useState(likes)
-    console.log(likes + ' ' + title)
+    // console.log(likes + ' ' + title)
 
     const clientLike = async () => {
         if (session?.user.id) {
             const response = await likeNews(session?.user.id, id)
-            console.log(response)
+            // console.log(response)
             if (response !== -1) {
                 if (currentIsLiked) {
                     setUpdatedLikes(response)

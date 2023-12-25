@@ -391,14 +391,14 @@ export const getNewsForHomePage = async (count: number) => {
         }
     }
 }
-export const getActiveRegions = async (numberOfRegions: number) => {
+export const getActiveRegions = async (numberOfRegions: number, fromDate: string, toDate: string) => {
     const fetchOptions = {
         method: 'GET',
         agent,
     };
 
     try {
-        const response = await fetch(`${link}api/News/GetNewsActiveRegions?countOfRegions=${numberOfRegions}`, fetchOptions);
+        const response = await fetch(`${link}api/News/GetNewsActiveRegions?countOfRegions=${numberOfRegions}&fromDate=2023-12-17&toDate=2023-12-24`, fetchOptions);
 
         if (!response.ok) {
             throw new Error(`HTTP error! Status: ${response.status}`);
