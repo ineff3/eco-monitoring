@@ -82,7 +82,7 @@ const InfiniteScrollNews = ({
                     </Reveal>
                 </div>
                 {news.map((curNews, index) => (
-                    Number(searchParams?.selectedNewsId) === curNews.id && index > 0 ? <></> : <Reveal key={curNews.id}>
+                    Number(searchParams?.selectedNewsId) === curNews.id && index > 0 ? <></> : <Reveal key={index}>
                         <NewsBlock
                             id={curNews.id}
                             title={curNews.title}
