@@ -12,6 +12,7 @@ import { useInView } from "react-intersection-observer";
 import Image from 'next/image'
 import { GoHeart, GoHeartFill } from "react-icons/go";
 import { useSession } from 'next-auth/react'
+import React from "react";
 
 const exo = Exo({
     subsets: ['latin'],
@@ -82,21 +83,22 @@ const InfiniteScrollNews = ({
                     </Reveal>
                 </div>
                 {news.map((curNews, index) => (
-                    Number(searchParams?.selectedNewsId) === curNews.id && index > 0 ? <></> : <Reveal key={index}>
-                        <NewsBlock
-                            id={curNews.id}
-                            title={curNews.title}
-                            body={curNews.body}
-                            post_date={curNews.post_date}
-                            source_url={curNews.source_url}
-                            authors={curNews.authors}
-                            likes={curNews.likes}
-                            company_names={curNews.company_names}
-                            region_names={curNews.region_names}
-                            isLiked={curNews.isLiked}
-                            setIsModalOpen={setIsModalOpen}
-                        />
-                    </Reveal>
+                    Number(searchParams?.selectedNewsId) === curNews.id && index > 0 ? <React.Fragment key={index}></React.Fragment>
+                        : <Reveal key={index}>
+                            <NewsBlock
+                                id={curNews.id}
+                                title={curNews.title}
+                                body={curNews.body}
+                                post_date={curNews.post_date}
+                                source_url={curNews.source_url}
+                                authors={curNews.authors}
+                                likes={curNews.likes}
+                                company_names={curNews.company_names}
+                                region_names={curNews.region_names}
+                                isLiked={curNews.isLiked}
+                                setIsModalOpen={setIsModalOpen}
+                            />
+                        </Reveal>
                 ))}
             </div>
             {/* <div className=" w-full flex flex-col items-center">
